@@ -153,8 +153,6 @@ router.post('/logout', (req, res) => {
   });
 });
 
-export default router;
-
 // Change own password (protected)
 router.get('/change-password', requireAuth, (req, res) => {
   res.render('change-password', { error: null, success: null });
@@ -187,3 +185,5 @@ router.post('/change-password', requireAuth, async (req, res) => {
 
   res.render('change-password', { error: null, success: 'Password aggiornata con successo.' });
 });
+
+export default router;
