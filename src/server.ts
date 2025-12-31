@@ -56,14 +56,12 @@ async function startServer() {
   app.use(express.static(path.join(__dirname, 'public')));
 
   // Session
-  const sessionCookieSecure = process.env.NODE_ENV === 'production';
-
   app.use(session({
     secret: process.env.SESSION_SECRET || 'fate-pbc-rpg-secret-key-2024',
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: sessionCookieSecure,
+      secure: 'auto',
       httpOnly: true,
       sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 giorni
