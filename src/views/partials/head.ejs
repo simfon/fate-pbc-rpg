@@ -1,31 +1,38 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><%= typeof title !== 'undefined' ? title + ' - ' : '' %>Cronache del Destino</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.10/htmx.min.js"></script>
+<% if (process.env.NODE_ENV !== 'production') { %>
+  <script src="https://cdn.tailwindcss.com"></script>
+<% } %>
+<link rel="stylesheet" href="/css/site.css">
+<script src="/js/htmx.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          parchment: '#f4e4bc',
-          ink: '#2c1810',
-          gold: '#c9a227',
-          blood: '#8b0000',
-          midnight: '#1a1a2e',
-          mist: '#e8e4e0',
-        },
-        fontFamily: {
-          title: ['Cinzel', 'serif'],
-          body: ['Crimson Text', 'serif'],
+<% if (process.env.NODE_ENV !== 'production') { %>
+  <script>
+    if (typeof tailwind !== 'undefined') {
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              parchment: '#f4e4bc',
+              ink: '#2c1810',
+              gold: '#c9a227',
+              blood: '#8b0000',
+              midnight: '#1a1a2e',
+              mist: '#e8e4e0',
+            },
+            fontFamily: {
+              title: ['Cinzel', 'serif'],
+              body: ['Crimson Text', 'serif'],
+            }
+          }
         }
-      }
+      };
     }
-  }
-</script>
+  </script>
+<% } %>
 <style>
   body {
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);

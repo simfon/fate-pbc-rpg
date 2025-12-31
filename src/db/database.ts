@@ -1,4 +1,4 @@
-import { createClient, Client, Row } from '@libsql/client';
+import { createClient, Client, Row, InValue } from '@libsql/client';
 
 let client: Client | null = null;
 
@@ -10,10 +10,11 @@ export async function initDatabase(): Promise<Client> {
 
   if (!url) {
     // Fallback to local file for development
+    const dbPath = process.env.NODE_ENV === 'production' ? 'file:data/cronache.db' : 'file:cronache.db';
     client = createClient({
-      url: 'file:cronache.db',
+      url: dbPath,
     });
-    console.log('📁 Using local SQLite database: cronache.db');
+    console.log(`📁 Using local SQLite database: ${dbPath.replace('file:', '')}`);
   } else {
     client = createClient({
       url,
@@ -44,7 +45,7 @@ function rowToObject<T>(row: Row): T {
 }
 
 // Query single row
-export async function queryOne<T>(sql: string, args: unknown[] = []): Promise<T | undefined> {
+export async function queryOne<T>(sql: string, args: InValue[] = []): Promise<T | undefined> {
   const db = getDb();
   const result = await db.execute({ sql, args });
   if (result.rows.length === 0) return undefined;
@@ -52,14 +53,14 @@ export async function queryOne<T>(sql: string, args: unknown[] = []): Promise<T 
 }
 
 // Query multiple rows
-export async function queryAll<T>(sql: string, args: unknown[] = []): Promise<T[]> {
+export async function queryAll<T>(sql: string, args: InValue[] = []): Promise<T[]> {
   const db = getDb();
   const result = await db.execute({ sql, args });
   return result.rows.map(row => rowToObject<T>(row));
 }
 
 // Execute INSERT/UPDATE/DELETE
-export async function execute(sql: string, args: unknown[] = []): Promise<{ lastInsertRowid: number; rowsAffected: number }> {
+export async function execute(sql: string, args: InValue[] = []): Promise<{ lastInsertRowid: number; rowsAffected: number }> {
   const db = getDb();
   const result = await db.execute({ sql, args });
   return {

@@ -114,7 +114,49 @@ SESSION_SECRET=your-random-secret-key
 
 The app automatically detects Turso credentials and uses cloud database when available.
 
-## 🔐 First Access
+## � Docker Deployment
+
+### Build and Run with Docker Compose
+
+```bash
+# Build and start
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop
+docker-compose down
+```
+
+The database is persisted in the `./data` directory on your host machine.
+
+### Environment Variables
+
+Create a `.env` file for Docker:
+
+```env
+SESSION_SECRET=your-random-secret-key
+# Optional: Use Turso instead of local SQLite
+TURSO_DATABASE_URL=libsql://your-database.turso.io
+TURSO_AUTH_TOKEN=your-token-here
+```
+
+### Manual Docker Build
+
+```bash
+# Build image
+docker build -t fate-pbc-rpg .
+
+# Run container
+docker run -d \
+  -p 3000:3000 \
+  -v $(pwd)/data:/app/data \
+  -e SESSION_SECRET=your-secret \
+  fate-pbc-rpg
+```
+
+## �🔐 First Access
 
 After running `npm run db:init`, you'll see:
 
