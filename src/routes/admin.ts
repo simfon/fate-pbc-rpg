@@ -3,6 +3,7 @@ import { randomBytes } from 'crypto';
 import { queryOne, queryAll, execute } from '../db/database.js';
 import { requireAdmin } from '../middleware/auth.js';
 import type { User, Character, Location } from '../types.js';
+import { createHash } from 'crypto';
 
 const router = Router();
 
@@ -329,3 +330,27 @@ router.post('/messages/:id/delete', requireAdmin, async (req, res) => {
 });
 
 export default router;
+
+// Admin: view change password form for a user
+router.get('/users/:id/password', requireAdmin, async (req, res) => {
+  const user = await queryOne<User>('SELECT id, username, role, is_banned FROM users WHERE id = ?', [req.params.id]);
+  if (!user) return res.status(404).render('error', { title: 'Non trovato', message: 'Utente non trovato' });
+  res.render('admin/user-password', { user, error: null, success: null });
+});
+
+// Admin: change a user's password (without seeing it)
+router.post('/users/:id/password', requireAdmin, async (req, res) => {
+  const { new_password, new_password_confirm } = req.body;
+  if (!new_password) {
+    const user = await queryOne<User>('SELECT id, username FROM users WHERE id = ?', [req.params.id]);
+    return res.render('admin/user-password', { user, error: 'Inserisci una nuova password.', success: null });
+  }
+  if (new_password !== new_password_confirm) {
+    const user = await queryOne<User>('SELECT id, username FROM users WHERE id = ?', [req.params.id]);
+    return res.render('admin/user-password', { user, error: 'Le password non coincidono.', success: null });
+  }
+
+  const hash = createHash('sha256').update(new_password).digest('hex');
+  await execute('UPDATE users SET password_hash = ? WHERE id = ?', [hash, req.params.id]);
+  res.redirect('/admin/users');
+});

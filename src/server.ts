@@ -40,6 +40,10 @@ async function startServer() {
   await runMigrations();
   
   const app = express();
+  // Enable trust proxy when behind a reverse proxy (only in production)
+  if (process.env.NODE_ENV === 'production') {
+    app.set('trust proxy', 1);
+  }
   const PORT = process.env.PORT || 3000;
 
   // View engine
@@ -52,13 +56,16 @@ async function startServer() {
   app.use(express.static(path.join(__dirname, 'public')));
 
   // Session
+  const sessionCookieSecure = process.env.NODE_ENV === 'production';
+
   app.use(session({
     secret: process.env.SESSION_SECRET || 'fate-pbc-rpg-secret-key-2024',
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false, // Set to true only if behind HTTPS proxy
+      secure: sessionCookieSecure,
       httpOnly: true,
+      sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 giorni
     }
   }));
