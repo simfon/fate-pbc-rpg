@@ -1,153 +1,185 @@
-# ⚔️ Cronache del Destino
+# ⚔️ Fate Play-by-Chat RPG
 
-Un gioco di ruolo play-by-chat in italiano, server-side rendered, ispirato al sistema **Fate Accelerated**.
+A server-side rendered play-by-chat role-playing game powered by the **Fate Accelerated Edition** system.
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-000000?style=flat&logo=express&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=flat&logo=sqlite&logoColor=white)
 
-## ✨ Caratteristiche
+## ✨ Features
 
-- 🏰 **Locazioni interconnesse** - Mappa navigabile con direzioni N/S/E/O
-- 💬 **Chat in tempo reale** - Polling HTMX per aggiornamenti fluidi
-- 🎭 **Schede personaggio** - Sistema Fate Accelerated con 6 Approcci
-- 🎲 **Tiri di dado** - 4dF integrati nella chat
-- 🌙 **Il Destino** - Game Master anonimi con messaggi speciali
-- 👥 **Pannello Admin** - Gestione utenti, locazioni e inviti
-- 🔐 **Sistema ad invito** - Registrazione solo con codice, niente email
+- 🏰 **Interconnected Locations** — Navigable map with N/S/E/W directional connections
+- 💬 **Real-time Chat** — HTMX polling for smooth message updates
+- 🎭 **Character Sheets** — Full Fate Accelerated system with 6 Approaches
+- 🎲 **Integrated Dice Rolls** — 4dF (Fate Dice) rolls displayed in chat
+- 🌙 **The Destiny** — Anonymous Game Master messages with special styling
+- 👥 **Admin Panel** — Complete management of users, locations, characters, and invites
+- 🔐 **Invite-only Registration** — No email required, code-based access control
+- ⚡ **Stress & Consequences** — Track damage with stress boxes and consequence slots
+- ✨ **Fate Points** — Spend and gain Fate Points with in-chat notifications
 
-## 🎮 Sistema di Gioco
+## 🎮 Game System
 
-Basato su **Fate Accelerated Edition**:
+Based on **Fate Accelerated Edition** (FAE):
 
-### Approcci
-- 🛡️ **Cauto** - Agire con prudenza e attenzione
-- 🧠 **Ingegnoso** - Usare astuzia e intelligenza
-- ✨ **Appariscente** - Fare le cose con stile
-- 💪 **Vigoroso** - Usare la forza bruta
-- ⚡ **Rapido** - Agire in velocità
-- 🗡️ **Furtivo** - Muoversi di nascosto
+### Approaches
+| Approach | Description |
+|----------|-------------|
+| 🛡️ **Careful** | Acting with caution and attention to detail |
+| 🧠 **Clever** | Using wit, intelligence, and cunning |
+| ✨ **Flashy** | Doing things with style and flair |
+| 💪 **Forceful** | Using brute strength and direct action |
+| ⚡ **Quick** | Acting with speed and agility |
+| 🗡️ **Sneaky** | Moving stealthily and acting covertly |
 
-### Distribuzione iniziale
-+3, +2, +2, +1, +1, +0
+### Starting Distribution
+Characters are created with approaches rated: **+3, +2, +2, +1, +1, +0**
 
-### Tipi di messaggio
-- 💬 **Dialogo** - Il personaggio parla
-- ⚔️ **Azione** - Descrizione narrativa *in corsivo*
-- 💭 **OOC** - Fuori personaggio
-- 🌙 **Destino** - Solo per GM, messaggi anonimi dorati
+### Character Sheet
+- **High Concept** — Your character's core identity
+- **Trouble** — A recurring complication
+- **3 Additional Aspects** — Optional narrative hooks
+- **3 Stress Boxes** — Absorb harm before taking consequences
+- **Consequences** — Mild (-2), Moderate (-4), Severe (-6)
+- **Fate Points** — Starting pool of 3
 
-## 🚀 Installazione
+### Message Types
+| Type | Description |
+|------|-------------|
+| 💬 **Dialogue** | Character speech |
+| ⚔️ **Action** | Narrative descriptions displayed in *italics* |
+| 🌙 **Destiny** | Anonymous GM messages (golden styling) |
+
+### Dice Rolls
+The integrated 4dF dice roller:
+- Rolls 4 Fate dice (each showing ⊟ -1, ⊡ 0, or ⊞ +1)
+- Adds selected Approach bonus
+- Supports optional modifiers
+- Results posted directly to location chat
+
+## 🚀 Installation
 
 ```bash
-# Clona o scarica il progetto
-cd cronache-di-avalon
+# Clone or download the project
+cd fate-pbc-rpg
 
-# Installa dipendenze
+# Install dependencies
 npm install
 
-# Inizializza il database
+# Initialize the database
 npm run db:init
 
-# Avvia in sviluppo
+# Start in development mode
 npm run dev
 
-# Oppure build + start per produzione
+# Or build and start for production
 npm run build
 npm start
 ```
 
-## 🔐 Primo Accesso
+## 🔐 First Access
 
-Dopo `npm run db:init`, vedrai:
+After running `npm run db:init`, you'll see:
 
 ```
-🔐 Credenziali Admin:
+🔐 Admin Credentials:
    Username: Narratore
    Password: admin123
 
-🎟️  Codice invito iniziale: [codice]
+🎟️  Initial invite code: [generated-code]
 ```
 
-1. Vai su http://localhost:3000
-2. Accedi come **Narratore** per amministrare
-3. Usa il codice invito per registrare altri utenti
-4. Genera nuovi codici dal pannello Admin
+### Getting Started
+1. Navigate to http://localhost:3000
+2. Log in as **Narratore** to access the admin panel
+3. Use the invite code to register additional players
+4. Generate new invite codes from Admin → Invites
 
-## 📁 Struttura Progetto
+## 👑 User Roles
+
+| Role | Permissions |
+|------|-------------|
+| **Player** | Create characters, play in locations, send messages |
+| **Destiny** | Player abilities + send anonymous Destiny messages |
+| **Admin** | Full access: manage users, locations, characters, invites |
+
+## 🛠️ Admin Panel
+
+Accessible at `/admin` for admin users:
+
+- **Dashboard** — Overview statistics (users, characters, locations, messages)
+- **Users** — View all users, change roles, ban/unban accounts
+- **Locations** — Create, edit, delete locations with bidirectional connections
+- **Characters** — View and edit all characters in the system
+- **Invites** — Generate multi-use invite codes (default: 5 uses, 7-day expiry)
+
+## 📁 Project Structure
 
 ```
 src/
-├── server.ts           # Entry point Express
-├── types.ts            # Tipi TypeScript
+├── server.ts           # Express entry point with session config
+├── types.ts            # TypeScript interfaces and types
 ├── db/
-│   ├── database.ts     # Connessione SQLite
-│   └── init.ts         # Schema e dati iniziali
+│   ├── database.ts     # SQL.js database connection
+│   └── init.ts         # Schema creation and seed data
 ├── middleware/
-│   └── auth.ts         # Middleware autenticazione
+│   └── auth.ts         # Authentication and authorization middleware
 ├── routes/
-│   ├── auth.ts         # Login, registrazione, logout
-│   ├── game.ts         # Dashboard, personaggi, gioco
-│   ├── admin.ts        # Pannello amministrazione
-│   └── api.ts          # API per chat e azioni
+│   ├── auth.ts         # Login, registration, logout
+│   ├── game.ts         # Dashboard, character creation, play interface
+│   ├── admin.ts        # Admin panel routes
+│   └── api.ts          # Chat messages, dice rolls, fate points, stress
 └── views/
-    ├── layout.ejs      # Layout base
-    ├── home.ejs        # Homepage
-    ├── login.ejs       # Form login
-    ├── register.ejs    # Form registrazione
-    ├── error.ejs       # Pagina errore
+    ├── home.ejs        # Landing page
+    ├── login.ejs       # Login form
+    ├── register.ejs    # Registration with invite code
+    ├── error.ejs       # Error display
     ├── game/
-    │   ├── dashboard.ejs      # Lista personaggi
+    │   ├── dashboard.ejs       # Character selection
     │   ├── character-create.ejs
     │   ├── character-view.ejs
-    │   └── play.ejs           # Chat di gioco
+    │   └── play.ejs            # Main chat interface
     ├── admin/
     │   ├── dashboard.ejs
     │   ├── users.ejs
     │   ├── locations.ejs
     │   ├── location-edit.ejs
+    │   ├── characters.ejs
+    │   ├── character-edit.ejs
     │   ├── invites.ejs
-    │   └── character-edit.ejs
+    │   └── messages.ejs
     └── partials/
+        ├── head.ejs
+        ├── admin-nav.ejs
         ├── messages.ejs
         └── present-characters.ejs
 ```
 
-## 🛠️ Stack Tecnologico
+## 🛠️ Tech Stack
 
-- **Express.js** - Server web
-- **EJS** - Template engine SSR
-- **HTMX** - Interattività senza SPA
-- **Tailwind CSS** (CDN) - Styling
-- **Better-sqlite3** - Database SQLite
-- **TypeScript** - Type safety
+| Technology | Purpose |
+|------------|---------|
+| **Express.js** | Web server and routing |
+| **EJS** | Server-side rendering templates |
+| **HTMX** | Reactive updates without a SPA framework |
+| **Tailwind CSS** (CDN) | Utility-first styling |
+| **SQL.js** | In-memory SQLite database |
+| **TypeScript** | Type safety and better DX |
+| **express-session** | Session management (7-day cookie) |
 
-## 🎨 Personalizzazione
+## 🗄️ Database Schema
 
-### Aggiungere locazioni
-Dal pannello Admin → Gestione Locazioni → Nuova Locazione
+### Tables
+- **users** — Authentication and roles
+- **characters** — Full FAE character sheets linked to users
+- **locations** — Game areas with N/S/E/W connections
+- **messages** — Chat history per location
+- **invites** — Multi-use registration codes with expiration
 
-### Modificare lo stile
-Modifica le variabili Tailwind in `layout.ejs`:
-```javascript
-tailwind.config = {
-  theme: {
-    extend: {
-      colors: {
-        parchment: '#f4e4bc',
-        ink: '#2c1810',
-        gold: '#c9a227',
-        // ...
-      }
-    }
-  }
-}
-```
+## 📜 License
 
-## 📜 Licenza
-
-MIT - Libero per uso personale e commerciale.
+fate-rpg-pbc © 2025 by Simone Fontana is licensed under CC BY-NC-SA 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/
 
 ---
 
-*Che le Cronache abbiano inizio!* ⚔️
+*Let the chronicles begin!* ⚔️
