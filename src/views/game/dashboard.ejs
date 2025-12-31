@@ -12,11 +12,10 @@
       <div class="flex items-center gap-2 sm:gap-4">
         <span class="hidden sm:inline text-mist/70 text-sm">Bentornato, <strong><%= user.username %></strong></span>
         <% if (user.is_admin) { %>
-          <a href="/admin" class="text-gold/70 hover:text-gold text-sm">⚙️</a>
+          <a href="/admin" class="text-mist/70 hover:text-mist text-xs sm:text-sm">⚙️ <span class="hidden sm:inline">Admin</span></a>
         <% } %>
-        <form action="/logout" method="POST" class="inline">
-          <button type="submit" class="text-blood/70 hover:text-blood text-sm">Esci</button>
-        </form>
+        <a href="/change-password" class="text-mist/70 hover:text-mist text-xs sm:text-sm">🔒 <span class="hidden sm:inline">Password</span></a>
+        <a href="/logout" class="text-mist/70 hover:text-mist text-xs sm:text-sm">↩ <span class="hidden sm:inline">Logout</span></a>
       </div>
     </div>
   </header>

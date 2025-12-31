@@ -3,6 +3,7 @@ import { randomBytes } from 'crypto';
 import { queryOne, queryAll, execute } from '../db/database.js';
 import { requireAdmin } from '../middleware/auth.js';
 import type { User, Character, Location } from '../types.js';
+import { createHash } from 'crypto';
 
 const router = Router();
 
@@ -328,4 +329,54 @@ router.post('/messages/:id/delete', requireAdmin, async (req, res) => {
   res.redirect(`/admin/messages${message ? `?location_id=${message.location_id}` : ''}`);
 });
 
+// Admin: delete a user (and rely on ON DELETE CASCADE for related rows)
+router.post('/users/:id/delete', requireAdmin, async (req, res) => {
+  const targetId = parseInt(req.params.id);
+  const currentId = Number(req.session.userId);
+
+  if (targetId === currentId) {
+    return res.status(400).render('error', { title: 'Azione non valida', message: 'Non puoi eliminare il tuo account.' });
+  }
+
+  const user = await queryOne<User>('SELECT id, role FROM users WHERE id = ?', [targetId]);
+  if (!user) {
+    return res.status(404).render('error', { title: 'Non trovato', message: 'Utente non trovato' });
+  }
+
+  if (user.role === 'admin') {
+    return res.status(403).render('error', { title: 'Accesso negato', message: 'Non puoi eliminare un altro amministratore.' });
+  }
+
+  await execute('DELETE FROM users WHERE id = ?', [targetId]);
+  res.redirect('/admin/users');
+});
+
 export default router;
+
+// Admin: view change password form for a user
+router.get('/users/:id/password', requireAdmin, async (req, res) => {
+  const user = await queryOne<User>('SELECT id, username, role, is_banned FROM users WHERE id = ?', [req.params.id]);
+  if (!user) return res.status(404).render('error', { title: 'Non trovato', message: 'Utente non trovato' });
+  if (user.role === 'admin') return res.status(403).render('error', { title: 'Accesso negato', message: 'Non puoi cambiare la password di un altro amministratore.' });
+  res.render('admin/user-password', { user, error: null, success: null });
+});
+
+// Admin: change a user's password (without seeing it)
+router.post('/users/:id/password', requireAdmin, async (req, res) => {
+  const { new_password, new_password_confirm } = req.body;
+  const target = await queryOne<User>('SELECT id, username, role FROM users WHERE id = ?', [req.params.id]);
+  if (!target) return res.status(404).render('error', { title: 'Non trovato', message: 'Utente non trovato' });
+  if (target.role === 'admin') return res.status(403).render('error', { title: 'Accesso negato', message: 'Non puoi cambiare la password di un altro amministratore.' });
+  if (!new_password) {
+    const user = await queryOne<User>('SELECT id, username FROM users WHERE id = ?', [req.params.id]);
+    return res.render('admin/user-password', { user, error: 'Inserisci una nuova password.', success: null });
+  }
+  if (new_password !== new_password_confirm) {
+    const user = await queryOne<User>('SELECT id, username FROM users WHERE id = ?', [req.params.id]);
+    return res.render('admin/user-password', { user, error: 'Le password non coincidono.', success: null });
+  }
+
+  const hash = createHash('sha256').update(new_password).digest('hex');
+  await execute('UPDATE users SET password_hash = ? WHERE id = ?', [hash, req.params.id]);
+  res.redirect('/admin/users');
+});

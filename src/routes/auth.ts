@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { createHash } from 'crypto';
 import { queryOne, execute } from '../db/database.js';
 import type { User, Invite } from '../types.js';
+import { requireAuth } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -150,6 +151,39 @@ router.post('/logout', (req, res) => {
     res.clearCookie('connect.sid');
     res.redirect('/');
   });
+});
+
+// Change own password (protected)
+router.get('/change-password', requireAuth, (req, res) => {
+  res.render('change-password', { error: null, success: null });
+});
+
+router.post('/change-password', requireAuth, async (req, res) => {
+  const { current_password, new_password, new_password_confirm } = req.body;
+  const userId = req.session.userId;
+
+  if (!current_password || !new_password) {
+    return res.render('change-password', { error: 'Compila tutti i campi.', success: null });
+  }
+
+  if (new_password !== new_password_confirm) {
+    return res.render('change-password', { error: 'Le password non coincidono.', success: null });
+  }
+
+  const user = await queryOne<User>('SELECT * FROM users WHERE id = ?', [userId]);
+  if (!user) {
+    return res.status(404).render('error', { title: 'Utente non trovato', message: 'Utente non trovato' });
+  }
+
+  if (user.password_hash !== createHash('sha256').update(current_password).digest('hex')) {
+    return res.render('change-password', { error: 'Password corrente non corretta.', success: null });
+  }
+
+  // Update with hashed new password
+  const newHash = createHash('sha256').update(new_password).digest('hex');
+  await execute('UPDATE users SET password_hash = ? WHERE id = ?', [newHash, userId]);
+
+  res.render('change-password', { error: null, success: 'Password aggiornata con successo.' });
 });
 
 export default router;
