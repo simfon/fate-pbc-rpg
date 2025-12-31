@@ -197,7 +197,7 @@ router.post('/invites/create', requireAdmin, async (req, res) => {
   
   await execute(
     'INSERT INTO invites (code, created_by, expires_at) VALUES (?, ?, ?)',
-    [code, req.session.userId, expiresAt]
+    [code, req.session.userId!, expiresAt]
   );
   
   res.redirect('/admin/invites');
@@ -304,7 +304,8 @@ router.get('/messages', requireAdmin, async (req, res) => {
   let selectedLocation = null;
   
   if (location_id) {
-    selectedLocation = await queryOne<Location>('SELECT * FROM locations WHERE id = ?', [location_id]);
+    const locationIdStr = String(location_id);
+    selectedLocation = await queryOne<Location>('SELECT * FROM locations WHERE id = ?', [locationIdStr]);
     messages = await queryAll<any>(
       `SELECT m.*, c.name as character_name, c.avatar_url as character_avatar, u.username
        FROM messages m
@@ -313,7 +314,7 @@ router.get('/messages', requireAdmin, async (req, res) => {
        WHERE m.location_id = ?
        ORDER BY m.created_at DESC
        LIMIT 500`,
-      [location_id]
+      [locationIdStr]
     );
   }
   

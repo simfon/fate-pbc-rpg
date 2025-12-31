@@ -43,8 +43,9 @@ router.post('/message', async (req, res) => {
     [location_id, characterId, req.session.userId, content.trim(), isAction ? 1 : 0, isDestiny ? 1 : 0, isOoc ? 1 : 0]
   );
   
-  // Ritorna alla pagina precedente
-  res.redirect('back');
+  // Ritorna alla pagina precedente (use Referrer to avoid deprecated "back")
+  const back = req.get('Referrer') || req.get('Referer') || '/';
+  res.redirect(back);
 });
 
 // Polling messaggi (per HTMX)
@@ -108,7 +109,7 @@ router.post('/character/:id/fate', async (req, res) => {
   const { action, location_id } = req.body;
   const character = await queryOne<Character>(
     'SELECT * FROM characters WHERE id = ? AND user_id = ?',
-    [req.params.id, req.session.userId]
+    [req.params.id, req.session.userId!]
   );
   
   if (!character) {
@@ -135,7 +136,8 @@ router.post('/character/:id/fate', async (req, res) => {
     );
   }
   
-  res.redirect('back');
+  const back = req.get('Referrer') || req.get('Referer') || '/';
+  res.redirect(back);
 });
 
 // Toggle stress
@@ -143,7 +145,7 @@ router.post('/character/:id/stress/:box', async (req, res) => {
   const { location_id } = req.body;
   const character = await queryOne<Character>(
     'SELECT * FROM characters WHERE id = ? AND user_id = ?',
-    [req.params.id, req.session.userId]
+    [req.params.id, req.session.userId!]
   );
   
   if (!character) {
@@ -168,7 +170,8 @@ router.post('/character/:id/stress/:box', async (req, res) => {
     );
   }
   
-  res.redirect('back');
+  const back = req.get('Referrer') || req.get('Referer') || '/';
+  res.redirect(back);
 });
 
 // Tiro di dado Fate (4dF)
@@ -209,7 +212,8 @@ router.post('/roll', async (req, res) => {
     [location_id, character_id, req.session.userId, content]
   );
   
-  res.redirect('back');
+  const back = req.get('Referrer') || req.get('Referer') || '/';
+  res.redirect(back);
 });
 
 export default router;

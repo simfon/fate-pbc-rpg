@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
      FROM characters c 
      LEFT JOIN locations l ON c.current_location_id = l.id
      WHERE c.user_id = ? AND c.is_active = 1`,
-    [req.session.userId]
+    [req.session.userId!]
   );
   
   if (characters.length === 0) {
@@ -107,7 +107,7 @@ router.get('/character/:id', async (req, res) => {
 router.get('/play/:characterId', async (req, res) => {
   const character = await queryOne<Character>(
     'SELECT * FROM characters WHERE id = ? AND user_id = ?',
-    [req.params.characterId, req.session.userId]
+    [req.params.characterId, req.session.userId!]
   );
   
   if (!character) {
@@ -175,7 +175,7 @@ router.post('/move/:characterId/:direction', async (req, res) => {
   
   const character = await queryOne<Character>(
     'SELECT * FROM characters WHERE id = ? AND user_id = ?',
-    [characterId, req.session.userId]
+    [characterId, req.session.userId!]
   );
   
   if (!character) {
