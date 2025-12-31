@@ -50,7 +50,7 @@ async function startServer() {
 
   // Session
   app.use(session({
-    secret: process.env.SESSION_SECRET || 'cronache-di-avalon-secret-key-2024',
+    secret: process.env.SESSION_SECRET || 'fate-pbc-rpg-secret-key-2024',
     resave: false,
     saveUninitialized: false,
     cookie: {
