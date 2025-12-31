@@ -161,7 +161,9 @@ router.get('/change-password', requireAuth, (req, res) => {
 router.post('/change-password', requireAuth, async (req, res) => {
   const { current_password, new_password, new_password_confirm } = req.body;
   const userId = req.session.userId;
-
+  if (typeof userId !== 'number') {
+    return res.status(400).render('change-password', { error: 'Sessione non valida.', success: null });
+  }
   if (!current_password || !new_password) {
     return res.render('change-password', { error: 'Compila tutti i campi.', success: null });
   }
