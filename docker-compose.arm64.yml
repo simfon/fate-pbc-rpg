@@ -2,8 +2,11 @@ version: '3.8'
 
 services:
   app:
-    build: .
-    image: simfon/fate-pbc-rpg:latest
+    platform: linux/arm64
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: fate-pbc-rpg-app:arm64
     ports:
       - "3000:3000"
     environment:
@@ -12,7 +15,6 @@ services:
       - TURSO_DATABASE_URL=${TURSO_DATABASE_URL:-}
       - TURSO_AUTH_TOKEN=${TURSO_AUTH_TOKEN:-}
     volumes:
-      # Persistent storage for local SQLite database
       - ./data:/app/data
     restart: unless-stopped
     command: sh -c "npm run db:init:prod && npm start"
