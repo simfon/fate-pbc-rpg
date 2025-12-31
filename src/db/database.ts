@@ -1,106 +1,81 @@
-import initSqlJs, { Database as SqlJsDatabase } from 'sql.js';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { createClient, Client, Row } from '@libsql/client';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dbPath = path.join(__dirname, '../../cronache.db');
+let client: Client | null = null;
 
-// Wrapper per compatibilità con l'API better-sqlite3
-export class DatabaseWrapper {
-  private db: SqlJsDatabase;
-  private dbPath: string;
-  
-  constructor(database: SqlJsDatabase, dbPath: string) {
-    this.db = database;
-    this.dbPath = dbPath;
-  }
-  
-  prepare(sql: string) {
-    const db = this.db;
-    const saveFn = () => this.save();
-    
-    return {
-      run(...params: unknown[]) {
-        db.run(sql, params as (string | number | null | Uint8Array)[]);
-        const lastIdResult = db.exec('SELECT last_insert_rowid()');
-        const lastId = lastIdResult[0]?.values[0]?.[0] as number || 0;
-        const changes = db.getRowsModified();
-        saveFn();
-        return { lastInsertRowid: lastId, changes };
-      },
-      get(...params: unknown[]) {
-        const stmt = db.prepare(sql);
-        stmt.bind(params as (string | number | null | Uint8Array)[]);
-        if (stmt.step()) {
-          const row = stmt.getAsObject();
-          stmt.free();
-          return row;
-        }
-        stmt.free();
-        return undefined;
-      },
-      all(...params: unknown[]) {
-        const stmt = db.prepare(sql);
-        stmt.bind(params as (string | number | null | Uint8Array)[]);
-        const results: Record<string, unknown>[] = [];
-        while (stmt.step()) {
-          results.push(stmt.getAsObject());
-        }
-        stmt.free();
-        return results;
-      }
-    };
-  }
-  
-  exec(sql: string) {
-    this.db.exec(sql);
-    this.save();
-  }
-  
-  save() {
-    fs.writeFileSync(this.dbPath, Buffer.from(this.db.export()));
-  }
-  
-  pragma(pragma: string) {
-    try {
-      this.db.exec(`PRAGMA ${pragma}`);
-    } catch {
-      // Ignora errori pragma
-    }
-  }
-  
-  close() {
-    this.db.close();
-  }
-}
+export async function initDatabase(): Promise<Client> {
+  if (client) return client;
 
-// Variabile globale per il database
-let dbInstance: DatabaseWrapper | null = null;
+  const url = process.env.TURSO_DATABASE_URL;
+  const authToken = process.env.TURSO_AUTH_TOKEN;
 
-// Funzione async per inizializzare il database
-export async function initDatabase(): Promise<DatabaseWrapper> {
-  if (dbInstance) return dbInstance;
-  
-  const SQL = await initSqlJs();
-  
-  let database: SqlJsDatabase;
-  
-  if (fs.existsSync(dbPath)) {
-    const buffer = fs.readFileSync(dbPath);
-    database = new SQL.Database(buffer);
+  if (!url) {
+    // Fallback to local file for development
+    client = createClient({
+      url: 'file:cronache.db',
+    });
+    console.log('📁 Using local SQLite database: cronache.db');
   } else {
-    database = new SQL.Database();
+    client = createClient({
+      url,
+      authToken,
+    });
+    console.log('☁️  Connected to Turso database');
   }
-  
-  dbInstance = new DatabaseWrapper(database, dbPath);
-  return dbInstance;
+
+  return client;
 }
 
-// Getter sincrono per uso dopo l'inizializzazione
-export function getDb(): DatabaseWrapper {
-  if (!dbInstance) {
+export function getDb(): Client {
+  if (!client) {
     throw new Error('Database non inizializzato. Chiama initDatabase() prima.');
   }
-  return dbInstance;
+  return client;
+}
+
+// Helper: convert Row to plain object
+function rowToObject<T>(row: Row): T {
+  const obj: Record<string, unknown> = {};
+  for (const key in row) {
+    if (Object.prototype.hasOwnProperty.call(row, key)) {
+      obj[key] = row[key];
+    }
+  }
+  return obj as T;
+}
+
+// Query single row
+export async function queryOne<T>(sql: string, args: unknown[] = []): Promise<T | undefined> {
+  const db = getDb();
+  const result = await db.execute({ sql, args });
+  if (result.rows.length === 0) return undefined;
+  return rowToObject<T>(result.rows[0]);
+}
+
+// Query multiple rows
+export async function queryAll<T>(sql: string, args: unknown[] = []): Promise<T[]> {
+  const db = getDb();
+  const result = await db.execute({ sql, args });
+  return result.rows.map(row => rowToObject<T>(row));
+}
+
+// Execute INSERT/UPDATE/DELETE
+export async function execute(sql: string, args: unknown[] = []): Promise<{ lastInsertRowid: number; rowsAffected: number }> {
+  const db = getDb();
+  const result = await db.execute({ sql, args });
+  return {
+    lastInsertRowid: Number(result.lastInsertRowid ?? 0),
+    rowsAffected: result.rowsAffected,
+  };
+}
+
+// Execute raw SQL (for schema/migrations)
+export async function execRaw(sql: string): Promise<void> {
+  const db = getDb();
+  await db.execute(sql);
+}
+
+// Execute multiple statements in a batch
+export async function execBatch(statements: string[]): Promise<void> {
+  const db = getDb();
+  await db.batch(statements.map(sql => ({ sql, args: [] })));
 }

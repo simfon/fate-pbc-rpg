@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { createHash } from 'crypto';
-import { getDb } from '../db/database.js';
+import { queryOne, execute } from '../db/database.js';
 import type { User, Invite } from '../types.js';
 
 const router = Router();
@@ -18,17 +18,17 @@ router.get('/login', (req, res) => {
 });
 
 // Login action
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
   const { username, password } = req.body;
-  const db = getDb();
   
   if (!username || !password) {
     return res.render('login', { error: 'Inserisci username e password.' });
   }
   
-  const user = db.prepare(`
-    SELECT * FROM users WHERE username = ?
-  `).get(username) as User | undefined;
+  const user = await queryOne<User>(
+    'SELECT * FROM users WHERE username = ?',
+    [username]
+  );
   
   if (!user) {
     return res.render('login', { error: 'Credenziali non valide.' });
@@ -60,9 +60,8 @@ router.get('/register', (req, res) => {
 });
 
 // Register action
-router.post('/register', (req, res) => {
+router.post('/register', async (req, res) => {
   const { username, password, password_confirm, invite_code } = req.body;
-  const db = getDb();
   
   // Validazione
   if (!username || !password || !invite_code) {
@@ -94,10 +93,10 @@ router.post('/register', (req, res) => {
   }
   
   // Verifica invito
-  const invite = db.prepare(`
-    SELECT * FROM invites 
-    WHERE code = ? AND use_count < COALESCE(max_uses, 5) AND expires_at > datetime('now')
-  `).get(invite_code) as Invite | undefined;
+  const invite = await queryOne<Invite>(
+    "SELECT * FROM invites WHERE code = ? AND use_count < COALESCE(max_uses, 5) AND expires_at > datetime('now')",
+    [invite_code]
+  );
   
   if (!invite) {
     return res.render('register', { 
@@ -107,7 +106,10 @@ router.post('/register', (req, res) => {
   }
   
   // Verifica username unico
-  const existingUser = db.prepare('SELECT id FROM users WHERE username = ?').get(username);
+  const existingUser = await queryOne<{ id: number }>(
+    'SELECT id FROM users WHERE username = ?',
+    [username]
+  );
   if (existingUser) {
     return res.render('register', { 
       error: 'Questo username è già in uso.', 
@@ -116,15 +118,19 @@ router.post('/register', (req, res) => {
   }
   
   // Crea utente
-  const result = db.prepare(`
-    INSERT INTO users (username, password_hash) VALUES (?, ?)
-  `).run(username, hashPassword(password));
+  const result = await execute(
+    'INSERT INTO users (username, password_hash) VALUES (?, ?)',
+    [username, hashPassword(password)]
+  );
   
   // Incrementa contatore uso invito
-  db.prepare('UPDATE invites SET use_count = use_count + 1, used_by = ? WHERE id = ?').run(result.lastInsertRowid, invite.id);
+  await execute(
+    'UPDATE invites SET use_count = use_count + 1, used_by = ? WHERE id = ?',
+    [result.lastInsertRowid, invite.id]
+  );
   
   // Login automatico
-  req.session.userId = result.lastInsertRowid as number;
+  req.session.userId = result.lastInsertRowid;
   req.session.username = username;
   req.session.role = 'player';
   
