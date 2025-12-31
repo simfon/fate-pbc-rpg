@@ -1,9 +1,10 @@
+import 'dotenv/config';
 import express from 'express';
 import session from 'express-session';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import { initDatabase, getDb } from './db/database.js';
+import { initDatabase, execRaw, execute } from './db/database.js';
 import authRoutes from './routes/auth.js';
 import gameRoutes from './routes/game.js';
 import adminRoutes from './routes/admin.js';
@@ -12,26 +13,22 @@ import { requireAuth } from './middleware/auth.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Migration per aggiungere colonne use_count e max_uses agli inviti
+// Migration per aggiungere colonne mancanti
 async function runMigrations() {
-  const db = getDb();
-  try {
-    db.exec('ALTER TABLE invites ADD COLUMN use_count INTEGER DEFAULT 0');
-    console.log('📝 Migration: aggiunta colonna use_count');
-  } catch {
-    // Colonna già esistente
-  }
-  try {
-    db.exec('ALTER TABLE invites ADD COLUMN max_uses INTEGER DEFAULT 5');
-    console.log('📝 Migration: aggiunta colonna max_uses');
-  } catch {
-    // Colonna già esistente
-  }
-  try {
-    db.exec('ALTER TABLE users ADD COLUMN last_seen TEXT');
-    console.log('📝 Migration: aggiunta colonna last_seen');
-  } catch {
-    // Colonna già esistente
+  // Migrations are handled gracefully - SQLite will error if column exists, we catch it
+  const migrations = [
+    'ALTER TABLE invites ADD COLUMN use_count INTEGER DEFAULT 0',
+    'ALTER TABLE invites ADD COLUMN max_uses INTEGER DEFAULT 5',
+    'ALTER TABLE users ADD COLUMN last_seen TEXT',
+  ];
+  
+  for (const migration of migrations) {
+    try {
+      await execRaw(migration);
+      console.log(`📝 Migration applied: ${migration.substring(0, 50)}...`);
+    } catch {
+      // Column already exists, ignore
+    }
   }
 }
 
@@ -74,11 +71,10 @@ async function startServer() {
       role: req.session.role
     } : null;
     
-    // Aggiorna last_seen per utenti autenticati
+    // Aggiorna last_seen per utenti autenticati (fire and forget)
     if (req.session.userId) {
-      const db = getDb();
       const now = new Date().toISOString().replace('T', ' ').replace(/\.\d{3}Z$/, '');
-      db.prepare('UPDATE users SET last_seen = ? WHERE id = ?').run(now, req.session.userId);
+      execute('UPDATE users SET last_seen = ? WHERE id = ?', [now, req.session.userId]).catch(() => {});
     }
     
     next();

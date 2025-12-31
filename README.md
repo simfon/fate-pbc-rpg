@@ -77,6 +77,43 @@ npm run build
 npm start
 ```
 
+## ☁️ Database Configuration
+
+### Local Development (SQLite)
+
+By default, the app uses a local `cronache.db` file. No configuration needed.
+
+### Production (Turso Cloud Database)
+
+For persistent cloud-hosted SQLite:
+
+```bash
+# Install Turso CLI
+curl -sSfL https://get.tur.so/install.sh | bash
+
+# Login
+turso auth login
+
+# Create database
+turso db create cronache-del-destino
+
+# Get database URL
+turso db show cronache-del-destino --url
+
+# Create auth token
+turso db tokens create cronache-del-destino
+```
+
+Create a `.env` file in the project root:
+
+```env
+TURSO_DATABASE_URL=libsql://your-database.turso.io
+TURSO_AUTH_TOKEN=your-token-here
+SESSION_SECRET=your-random-secret-key
+```
+
+The app automatically detects Turso credentials and uses cloud database when available.
+
 ## 🔐 First Access
 
 After running `npm run db:init`, you'll see:
@@ -163,9 +200,10 @@ src/
 | **EJS** | Server-side rendering templates |
 | **HTMX** | Reactive updates without a SPA framework |
 | **Tailwind CSS** (CDN) | Utility-first styling |
-| **SQL.js** | In-memory SQLite database |
+| **@libsql/client** | SQLite database (local or Turso cloud) |
 | **TypeScript** | Type safety and better DX |
 | **express-session** | Session management (7-day cookie) |
+| **dotenv** | Environment variable management |
 
 ## 🗄️ Database Schema
 
