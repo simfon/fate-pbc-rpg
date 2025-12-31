@@ -34,10 +34,17 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-ink mb-1">Concetto</label>
-          <input type="text" name="concept"
+          <label class="block text-sm font-medium text-ink mb-1">Concetto Chiave</label>
+          <input type="text" name="high_concept"
                  class="input-field w-full"
-                 value="<%= character.concept || '' %>">
+                 value="<%= character.high_concept || '' %>">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-ink mb-1">Problema</label>
+          <input type="text" name="trouble"
+                 class="input-field w-full"
+                 value="<%= character.trouble || '' %>">
         </div>
 
         <div>
@@ -54,34 +61,34 @@
         
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-ink mb-1">💪 Energico</label>
-            <input type="number" name="energico" min="-2" max="5" 
-                   class="input-field w-full" value="<%= character.energico %>">
+            <label class="block text-sm font-medium text-ink mb-1">�️ Cauto</label>
+            <input type="number" name="careful" min="-2" max="5" 
+                   class="input-field w-full" value="<%= character.careful %>">
           </div>
           <div>
-            <label class="block text-sm font-medium text-ink mb-1">🎭 Appariscente</label>
-            <input type="number" name="appariscente" min="-2" max="5" 
-                   class="input-field w-full" value="<%= character.appariscente %>">
+            <label class="block text-sm font-medium text-ink mb-1">🧠 Ingegnoso</label>
+            <input type="number" name="clever" min="-2" max="5" 
+                   class="input-field w-full" value="<%= character.clever %>">
           </div>
           <div>
-            <label class="block text-sm font-medium text-ink mb-1">🤝 Amichevole</label>
-            <input type="number" name="amichevole" min="-2" max="5" 
-                   class="input-field w-full" value="<%= character.amichevole %>">
+            <label class="block text-sm font-medium text-ink mb-1">✨ Appariscente</label>
+            <input type="number" name="flashy" min="-2" max="5" 
+                   class="input-field w-full" value="<%= character.flashy %>">
           </div>
           <div>
-            <label class="block text-sm font-medium text-ink mb-1">🧠 Attento</label>
-            <input type="number" name="attento" min="-2" max="5" 
-                   class="input-field w-full" value="<%= character.attento %>">
+            <label class="block text-sm font-medium text-ink mb-1">💪 Vigoroso</label>
+            <input type="number" name="forceful" min="-2" max="5" 
+                   class="input-field w-full" value="<%= character.forceful %>">
           </div>
           <div>
-            <label class="block text-sm font-medium text-ink mb-1">🔮 Ingegnoso</label>
-            <input type="number" name="ingegnoso" min="-2" max="5" 
-                   class="input-field w-full" value="<%= character.ingegnoso %>">
+            <label class="block text-sm font-medium text-ink mb-1">⚡ Rapido</label>
+            <input type="number" name="quick" min="-2" max="5" 
+                   class="input-field w-full" value="<%= character.quick %>">
           </div>
           <div>
-            <label class="block text-sm font-medium text-ink mb-1">🌑 Furtivo</label>
-            <input type="number" name="furtivo" min="-2" max="5" 
-                   class="input-field w-full" value="<%= character.furtivo %>">
+            <label class="block text-sm font-medium text-ink mb-1">🗡️ Furtivo</label>
+            <input type="number" name="sneaky" min="-2" max="5" 
+                   class="input-field w-full" value="<%= character.sneaky %>">
           </div>
         </div>
       </div>
@@ -92,30 +99,51 @@
         
         <div class="grid grid-cols-3 gap-4">
           <div>
-            <label class="block text-sm font-medium text-ink mb-1">Stress Fisico</label>
-            <input type="number" name="stress_fisico" min="0" max="10" 
-                   class="input-field w-full" value="<%= character.stress_fisico %>">
+            <label class="block text-sm font-medium text-ink mb-1">✨ Punti Fato</label>
+            <input type="number" name="fate_points" min="0" max="10" 
+                   class="input-field w-full" value="<%= character.fate_points %>">
           </div>
-          <div>
-            <label class="block text-sm font-medium text-ink mb-1">Max Fisico</label>
-            <input type="number" name="stress_fisico_max" min="1" max="10" 
-                   class="input-field w-full" value="<%= character.stress_fisico_max %>">
+          <div class="col-span-2">
+            <label class="block text-sm font-medium text-ink mb-1">💢 Stress</label>
+            <div class="flex gap-4 mt-2">
+              <label class="flex items-center gap-2">
+                <input type="checkbox" name="stress_1" <%= character.stress_1 ? 'checked' : '' %>>
+                <span>1</span>
+              </label>
+              <label class="flex items-center gap-2">
+                <input type="checkbox" name="stress_2" <%= character.stress_2 ? 'checked' : '' %>>
+                <span>2</span>
+              </label>
+              <label class="flex items-center gap-2">
+                <input type="checkbox" name="stress_3" <%= character.stress_3 ? 'checked' : '' %>>
+                <span>3</span>
+              </label>
+            </div>
           </div>
-          <div>
-            <label class="block text-sm font-medium text-ink mb-1">Punti Fato</label>
-            <input type="number" name="punti_fato" min="0" max="10" 
-                   class="input-field w-full" value="<%= character.punti_fato %>">
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-ink mb-1">Stress Mentale</label>
-            <input type="number" name="stress_mentale" min="0" max="10" 
-                   class="input-field w-full" value="<%= character.stress_mentale %>">
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-ink mb-1">Max Mentale</label>
-            <input type="number" name="stress_mentale_max" min="1" max="10" 
-                   class="input-field w-full" value="<%= character.stress_mentale_max %>">
-          </div>
+        </div>
+      </div>
+
+      <!-- Consequences -->
+      <div class="space-y-4">
+        <h2 class="font-title text-lg text-gold border-b border-gold/20 pb-2">Conseguenze</h2>
+        
+        <div>
+          <label class="block text-sm font-medium text-ink mb-1">Lieve (-2)</label>
+          <input type="text" name="mild_consequence"
+                 class="input-field w-full"
+                 value="<%= character.mild_consequence || '' %>">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-ink mb-1">Moderata (-4)</label>
+          <input type="text" name="moderate_consequence"
+                 class="input-field w-full"
+                 value="<%= character.moderate_consequence || '' %>">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-ink mb-1">Grave (-6)</label>
+          <input type="text" name="severe_consequence"
+                 class="input-field w-full"
+                 value="<%= character.severe_consequence || '' %>">
         </div>
       </div>
 

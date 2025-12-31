@@ -27,6 +27,12 @@ async function runMigrations() {
   } catch {
     // Colonna già esistente
   }
+  try {
+    db.exec('ALTER TABLE users ADD COLUMN last_seen TEXT');
+    console.log('📝 Migration: aggiunta colonna last_seen');
+  } catch {
+    // Colonna già esistente
+  }
 }
 
 async function startServer() {
@@ -60,13 +66,21 @@ async function startServer() {
     }
   }));
 
-  // Passa variabili di sessione ai template
+  // Passa variabili di sessione ai template e aggiorna last_seen
   app.use((req, res, next) => {
     res.locals.user = req.session.userId ? {
       id: req.session.userId,
       username: req.session.username,
       role: req.session.role
     } : null;
+    
+    // Aggiorna last_seen per utenti autenticati
+    if (req.session.userId) {
+      const db = getDb();
+      const now = new Date().toISOString().replace('T', ' ').replace(/\.\d{3}Z$/, '');
+      db.prepare('UPDATE users SET last_seen = ? WHERE id = ?').run(now, req.session.userId);
+    }
+    
     next();
   });
 

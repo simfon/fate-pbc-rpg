@@ -8,6 +8,7 @@ export interface User {
   password_hash: string;
   role: UserRole;
   is_banned: boolean;
+  last_seen: string | null;
   created_at: string;
 }
 

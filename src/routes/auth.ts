@@ -134,12 +134,14 @@ router.post('/register', (req, res) => {
 // Logout
 router.get('/logout', (req, res) => {
   req.session.destroy(() => {
+    res.clearCookie('connect.sid');
     res.redirect('/');
   });
 });
 
 router.post('/logout', (req, res) => {
   req.session.destroy(() => {
+    res.clearCookie('connect.sid');
     res.redirect('/');
   });
 });
