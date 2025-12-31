@@ -1,0 +1,17 @@
+<h3 class="font-title text-sm text-gold/80 mb-3">Chi c'è qui</h3>
+<div class="flex flex-wrap gap-2">
+  <% presentCharacters.forEach(function(char) { %>
+    <a href="/game/character/<%= char.id %>" 
+       class="flex items-center gap-2 px-2 py-1 bg-gold/10 hover:bg-gold/20 rounded text-sm text-mist transition-colors">
+      <% if (char.avatar_url) { %>
+        <img src="<%= char.avatar_url %>" class="w-6 h-6 rounded-full object-cover">
+      <% } else { %>
+        <span>🧙</span>
+      <% } %>
+      <span><%= char.name %></span>
+    </a>
+  <% }); %>
+  <% if (presentCharacters.length === 0) { %>
+    <span class="text-mist/40 italic text-sm">Nessuno presente</span>
+  <% } %>
+</div>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="it">
+<%- include('../partials/head', { title: 'Codici Invito' }) %>
+<body class="min-h-screen bg-gradient-to-b from-parchment to-parchment-dark">
+  <!-- Header -->
+  <header class="bg-midnight/95 text-mist py-4 shadow-xl">
+    <div class="container mx-auto px-4 flex items-center justify-between">
+      <a href="/game" class="font-title text-xl text-gold hover:text-gold/80 transition-colors">
+        Cronache del Destino
+      </a>
+      <div class="flex items-center gap-4">
+        <span class="bg-blood/80 text-white text-xs px-2 py-1 rounded">ADMIN</span>
+        <a href="/admin" class="text-mist/70 hover:text-mist text-sm">← Pannello Admin</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <div class="flex items-center justify-between mb-8">
+      <h1 class="font-title text-3xl text-ink">Codici Invito</h1>
+      <form action="/admin/invites/create" method="POST">
+        <button type="submit" class="btn-primary px-4 py-2 font-title">
+          + Genera Nuovo Codice
+        </button>
+      </form>
+    </div>
+
+    <% if (typeof newCode !== 'undefined' && newCode) { %>
+      <div class="bg-gold/10 border border-gold/30 p-4 rounded-lg mb-6">
+        <p class="text-sm text-ink mb-2">Nuovo codice generato:</p>
+        <div class="flex items-center gap-4">
+          <code class="bg-white px-4 py-2 rounded font-mono text-lg text-gold"><%= newCode %></code>
+          <button onclick="navigator.clipboard.writeText('<%= newCode %>')" 
+                  class="text-sm text-gold hover:underline">
+            📋 Copia
+          </button>
+        </div>
+      </div>
+    <% } %>
+
+    <div class="card overflow-hidden">
+      <table class="w-full">
+        <thead class="bg-midnight/10">
+          <tr>
+            <th class="text-left p-4 font-title text-sm text-ink">Codice</th>
+            <th class="text-left p-4 font-title text-sm text-ink">Creato da</th>
+            <th class="text-left p-4 font-title text-sm text-ink">Data</th>
+            <th class="text-left p-4 font-title text-sm text-ink">Utilizzi</th>
+            <th class="text-left p-4 font-title text-sm text-ink">Stato</th>
+            <th class="text-right p-4 font-title text-sm text-ink">Azioni</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-ink/10">
+          <% invites.forEach(function(inv) { %>
+            <% 
+              const maxUses = inv.max_uses || 5;
+              const useCount = inv.use_count || 0;
+              const isExhausted = useCount >= maxUses;
+              const remaining = maxUses - useCount;
+            %>
+            <tr class="<%= isExhausted ? 'bg-midnight/5' : '' %>">
+              <td class="p-4">
+                <code class="font-mono text-sm <%= isExhausted ? 'text-ink/40' : 'text-gold' %>">
+                  <%= inv.code %>
+                </code>
+              </td>
+              <td class="p-4 text-sm text-ink/70">
+                <%= inv.creator_name || 'Sistema' %>
+              </td>
+              <td class="p-4 text-sm text-ink/70">
+                <%= new Date(inv.created_at).toLocaleDateString('it-IT') %>
+              </td>
+              <td class="p-4">
+                <div class="flex items-center gap-2">
+                  <div class="flex gap-0.5">
+                    <% for (let i = 0; i < maxUses; i++) { %>
+                      <div class="w-2 h-4 rounded-sm <%= i < useCount ? 'bg-blood' : 'bg-green-400' %>"></div>
+                    <% } %>
+                  </div>
+                  <span class="text-xs text-ink/50"><%= useCount %>/<%= maxUses %></span>
+                </div>
+              </td>
+              <td class="p-4">
+                <% if (isExhausted) { %>
+                  <span class="bg-midnight/20 text-midnight text-xs px-2 py-0.5 rounded">Esaurito</span>
+                <% } else { %>
+                  <span class="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded">
+                    <%= remaining %> rimast<%= remaining === 1 ? 'o' : 'i' %>
+                  </span>
+                <% } %>
+              </td>
+              <td class="p-4 text-right">
+                <% if (!isExhausted) { %>
+                  <button onclick="navigator.clipboard.writeText('<%= inv.code %>')" 
+                          class="text-xs text-gold hover:underline mr-2">
+                    Copia
+                  </button>
+                  <form action="/admin/invites/<%= inv.id %>/delete" method="POST" class="inline"
+                        onsubmit="return confirm('Eliminare questo codice?')">
+                    <button type="submit" class="text-xs text-blood hover:underline">Elimina</button>
+                  </form>
+                <% } %>
+              </td>
+            </tr>
+          <% }); %>
+          <% if (invites.length === 0) { %>
+            <tr>
+              <td colspan="6" class="p-8 text-center text-ink/40">
+                Nessun codice invito presente
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</body>
+</html>

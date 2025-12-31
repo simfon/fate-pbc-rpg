@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="it">
+<%- include('../partials/head', { title: 'Gestione Utenti' }) %>
+<body class="min-h-screen bg-gradient-to-b from-parchment to-parchment-dark">
+  <!-- Header -->
+  <header class="bg-midnight/95 text-mist py-4 shadow-xl">
+    <div class="container mx-auto px-4 flex items-center justify-between">
+      <a href="/game" class="font-title text-xl text-gold hover:text-gold/80 transition-colors">
+        Cronache del Destino
+      </a>
+      <div class="flex items-center gap-4">
+        <span class="bg-blood/80 text-white text-xs px-2 py-1 rounded">ADMIN</span>
+        <a href="/admin" class="text-mist/70 hover:text-mist text-sm">← Pannello Admin</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <h1 class="font-title text-3xl text-ink mb-8">Gestione Utenti</h1>
+
+    <div class="card overflow-hidden">
+      <table class="w-full">
+        <thead class="bg-midnight/10">
+          <tr>
+            <th class="text-left p-4 font-title text-sm text-ink">Utente</th>
+            <th class="text-left p-4 font-title text-sm text-ink">Ruoli</th>
+            <th class="text-left p-4 font-title text-sm text-ink">Registrato</th>
+            <th class="text-left p-4 font-title text-sm text-ink">Ultimo Accesso</th>
+            <th class="text-right p-4 font-title text-sm text-ink">Azioni</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-ink/10">
+          <% users.forEach(function(u) { %>
+            <tr class="<%= u.is_banned ? 'bg-blood/5' : '' %>">
+              <td class="p-4">
+                <div class="font-medium text-ink"><%= u.username %></div>
+                <div class="text-xs text-ink/50">ID: <%= u.id %></div>
+              </td>
+              <td class="p-4">
+                <div class="flex gap-1">
+                  <% if (u.role === 'admin') { %>
+                    <span class="bg-blood/20 text-blood text-xs px-2 py-0.5 rounded">Admin</span>
+                  <% } %>
+                  <% if (u.role === 'destiny') { %>
+                    <span class="bg-gold/20 text-gold text-xs px-2 py-0.5 rounded">Destino</span>
+                  <% } %>
+                  <% if (u.is_banned) { %>
+                    <span class="bg-midnight/20 text-midnight text-xs px-2 py-0.5 rounded">Bannato</span>
+                  <% } %>
+                  <% if (u.role === 'player' && !u.is_banned) { %>
+                    <span class="text-ink/40 text-xs">Giocatore</span>
+                  <% } %>
+                </div>
+              </td>
+              <td class="p-4 text-sm text-ink/70">
+                <%= new Date(u.created_at).toLocaleDateString('it-IT') %>
+              </td>
+              <td class="p-4 text-sm text-ink/70">
+                Mai
+              </td>
+              <td class="p-4 text-right">
+                <% if (u.id !== user.id) { %>
+                  <div class="flex gap-2 justify-end">
+                    <% if (u.role !== 'destiny' && u.role !== 'admin') { %>
+                      <form action="/admin/users/<%= u.id %>/destiny" method="POST" class="inline">
+                        <button type="submit" class="text-xs text-gold hover:underline">+Destino</button>
+                      </form>
+                    <% } else if (u.role === 'destiny') { %>
+                      <form action="/admin/users/<%= u.id %>/remove-destiny" method="POST" class="inline">
+                        <button type="submit" class="text-xs text-ink/50 hover:underline">-Destino</button>
+                      </form>
+                    <% } %>
+                    
+                    <% if (!u.is_banned) { %>
+                      <form action="/admin/users/<%= u.id %>/ban" method="POST" class="inline">
+                        <button type="submit" class="text-xs text-blood hover:underline">Ban</button>
+                      </form>
+                    <% } else { %>
+                      <form action="/admin/users/<%= u.id %>/unban" method="POST" class="inline">
+                        <button type="submit" class="text-xs text-green-600 hover:underline">Unban</button>
+                      </form>
+                    <% } %>
+                  </div>
+                <% } else { %>
+                  <span class="text-xs text-ink/30">Tu</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</body>
+</html>

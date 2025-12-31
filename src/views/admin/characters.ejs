@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="it">
+<%- include('../partials/head', { title: 'Tutti i Personaggi' }) %>
+<body class="min-h-screen bg-gradient-to-b from-parchment to-parchment-dark">
+  <!-- Header -->
+  <header class="bg-midnight/95 text-mist py-4 shadow-xl">
+    <div class="container mx-auto px-4 flex items-center justify-between">
+      <a href="/game" class="font-title text-xl text-gold hover:text-gold/80 transition-colors">
+        Cronache del Destino
+      </a>
+      <div class="flex items-center gap-4">
+        <span class="bg-blood/80 text-white text-xs px-2 py-1 rounded">ADMIN</span>
+        <a href="/admin" class="text-mist/70 hover:text-mist text-sm">← Pannello Admin</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <h1 class="font-title text-3xl text-ink mb-8">Tutti i Personaggi</h1>
+
+    <div class="card overflow-hidden">
+      <table class="w-full">
+        <thead class="bg-midnight/10">
+          <tr>
+            <th class="text-left p-4 font-title text-sm text-ink">Personaggio</th>
+            <th class="text-left p-4 font-title text-sm text-ink">Giocatore</th>
+            <th class="text-left p-4 font-title text-sm text-ink">Posizione</th>
+            <th class="text-left p-4 font-title text-sm text-ink">Risorse</th>
+            <th class="text-right p-4 font-title text-sm text-ink">Azioni</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-ink/10">
+          <% characters.forEach(function(char) { %>
+            <tr>
+              <td class="p-4">
+                <div class="flex items-center gap-3">
+                  <% if (char.avatar_url) { %>
+                    <img src="<%= char.avatar_url %>" class="w-10 h-10 rounded-full object-cover">
+                  <% } else { %>
+                    <div class="w-10 h-10 rounded-full bg-midnight/10 flex items-center justify-center">🧙</div>
+                  <% } %>
+                  <div>
+                    <div class="font-medium text-ink"><%= char.name %></div>
+                    <div class="text-xs text-ink/50"><%= char.concept || 'Nessun concetto' %></div>
+                  </div>
+                </div>
+              </td>
+              <td class="p-4 text-sm text-ink/70">
+                <%= char.owner_username %>
+              </td>
+              <td class="p-4 text-sm text-ink/70">
+                <%= char.location_name || 'Sconosciuta' %>
+              </td>
+              <td class="p-4">
+                <div class="flex gap-2 text-xs">
+                  <span class="bg-blood/10 text-blood px-2 py-0.5 rounded">
+                    F: <%= char.stress_fisico %>/<%= char.stress_fisico_max %>
+                  </span>
+                  <span class="bg-midnight/10 text-midnight px-2 py-0.5 rounded">
+                    M: <%= char.stress_mentale %>/<%= char.stress_mentale_max %>
+                  </span>
+                  <span class="bg-gold/10 text-gold px-2 py-0.5 rounded">
+                    ✨ <%= char.punti_fato %>
+                  </span>
+                </div>
+              </td>
+              <td class="p-4 text-right">
+                <a href="/admin/characters/<%= char.id %>/edit" class="text-xs text-gold hover:underline mr-2">
+                  Modifica
+                </a>
+                <a href="/game/character/<%= char.id %>" class="text-xs text-ink/50 hover:underline">
+                  Vedi
+                </a>
+              </td>
+            </tr>
+          <% }); %>
+          <% if (characters.length === 0) { %>
+            <tr>
+              <td colspan="5" class="p-8 text-center text-ink/40">
+                Nessun personaggio creato
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</body>
+</html>

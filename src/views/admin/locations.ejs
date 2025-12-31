@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="it">
+<%- include('../partials/head', { title: 'Gestione Luoghi' }) %>
+<body class="min-h-screen bg-gradient-to-b from-parchment to-parchment-dark">
+  <!-- Header -->
+  <header class="bg-midnight/95 text-mist py-4 shadow-xl">
+    <div class="container mx-auto px-4 flex items-center justify-between">
+      <a href="/game" class="font-title text-xl text-gold hover:text-gold/80 transition-colors">
+        Cronache del Destino
+      </a>
+      <div class="flex items-center gap-4">
+        <span class="bg-blood/80 text-white text-xs px-2 py-1 rounded">ADMIN</span>
+        <a href="/admin" class="text-mist/70 hover:text-mist text-sm">← Pannello Admin</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <div class="flex items-center justify-between mb-8">
+      <h1 class="font-title text-3xl text-ink">Gestione Luoghi</h1>
+      <a href="/admin/locations/new" class="btn-primary px-4 py-2 font-title">
+        + Nuovo Luogo
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% locations.forEach(function(loc) { %>
+        <div class="card p-4">
+          <div class="flex items-start justify-between mb-3">
+            <h3 class="font-title text-lg text-ink"><%= loc.name %></h3>
+            <span class="text-xs text-ink/40">ID: <%= loc.id %></span>
+          </div>
+          <p class="text-ink/60 text-sm mb-4 line-clamp-3"><%= loc.description %></p>
+          
+          <div class="grid grid-cols-4 gap-1 text-xs text-center mb-4">
+            <div class="bg-midnight/5 rounded p-1" title="Nord">
+              <span class="<%= loc.exit_north ? 'text-gold' : 'text-ink/20' %>">⬆ N</span>
+            </div>
+            <div class="bg-midnight/5 rounded p-1" title="Sud">
+              <span class="<%= loc.exit_south ? 'text-gold' : 'text-ink/20' %>">⬇ S</span>
+            </div>
+            <div class="bg-midnight/5 rounded p-1" title="Est">
+              <span class="<%= loc.exit_east ? 'text-gold' : 'text-ink/20' %>">➡ E</span>
+            </div>
+            <div class="bg-midnight/5 rounded p-1" title="Ovest">
+              <span class="<%= loc.exit_west ? 'text-gold' : 'text-ink/20' %>">⬅ O</span>
+            </div>
+          </div>
+          
+          <div class="flex gap-2">
+            <a href="/admin/locations/<%= loc.id %>/edit" class="flex-1 btn-secondary text-center py-2 text-sm">
+              ✏️ Modifica
+            </a>
+            <form action="/admin/locations/<%= loc.id %>/delete" method="POST" 
+                  onsubmit="return confirm('Sei sicuro di voler eliminare questo luogo?')">
+              <button type="submit" class="px-3 py-2 text-blood hover:bg-blood/10 rounded text-sm transition-colors">
+                🗑️
+              </button>
+            </form>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </main>
+</body>
+</html>

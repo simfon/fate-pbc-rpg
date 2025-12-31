@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="it">
+<%- include('../partials/head', { title: location.name }) %>
+<body class="min-h-screen bg-gradient-to-b from-midnight to-midnight/90">
+  <!-- Header Bar -->
+  <header class="bg-midnight border-b border-gold/20 py-3 sticky top-0 z-50">
+    <div class="container mx-auto px-4 flex items-center justify-between">
+      <div class="flex items-center gap-2 sm:gap-4">
+        <!-- Mobile Menu Toggle -->
+        <button id="sidebar-toggle" class="md:hidden text-gold p-2 -ml-2 hover:bg-gold/10 rounded transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <a href="/game" class="font-title text-base sm:text-lg text-gold hover:text-gold/80 transition-colors">
+          <span class="hidden sm:inline">Cronache del Destino</span>
+          <span class="sm:hidden">CdD</span>
+        </a>
+        <span class="hidden sm:inline text-mist/30">|</span>
+        <span class="hidden sm:inline text-mist text-sm">
+          Stai giocando come <strong class="text-gold"><%= character.name %></strong>
+        </span>
+      </div>
+      <div class="flex items-center gap-2 sm:gap-4">
+        <a href="/game/character/<%= character.id %>" class="text-mist/70 hover:text-mist text-xs sm:text-sm">📋 <span class="hidden sm:inline">Scheda</span></a>
+        <a href="/game" class="text-mist/70 hover:text-mist text-xs sm:text-sm">🔄 <span class="hidden sm:inline">Cambia PG</span></a>
+        <% if (isDestiny) { %>
+          <span class="text-gold text-xs">🌙</span>
+        <% } %>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Sidebar Overlay -->
+  <div id="sidebar-overlay" class="sidebar-overlay fixed inset-0 bg-black/50 z-30 md:hidden"></div>
+
+  <div class="container mx-auto flex h-[calc(100vh-57px)]">
+    <!-- Sidebar -->
+    <aside id="game-sidebar" class="game-sidebar w-72 bg-midnight/50 border-r border-gold/10 flex flex-col">
+      <!-- Location Info -->
+      <div class="p-4 border-b border-gold/10">
+        <h2 class="font-title text-xl text-gold mb-2"><%= location.name %></h2>
+        <p class="text-mist/70 text-sm leading-relaxed"><%= location.description %></p>
+      </div>
+
+      <!-- Navigation -->
+      <div class="p-4 border-b border-gold/10">
+        <h3 class="font-title text-xs text-gold/60 uppercase tracking-wider mb-3">Direzioni</h3>
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div></div>
+          <% if (connections.north) { %>
+            <form action="/game/move/<%= character.id %>/north" method="POST" class="inline">
+              <button type="submit" class="w-full bg-midnight hover:bg-gold/20 text-mist text-xs py-2 rounded border border-gold/20 transition-colors">
+                ⬆ N
+              </button>
+            </form>
+          <% } else { %>
+            <div class="bg-midnight/30 text-mist/20 text-xs py-2 rounded">⬆ N</div>
+          <% } %>
+          <div></div>
+          
+          <% if (connections.west) { %>
+            <form action="/game/move/<%= character.id %>/west" method="POST" class="inline">
+              <button type="submit" class="w-full bg-midnight hover:bg-gold/20 text-mist text-xs py-2 rounded border border-gold/20 transition-colors">
+                ⬅ O
+              </button>
+            </form>
+          <% } else { %>
+            <div class="bg-midnight/30 text-mist/20 text-xs py-2 rounded">⬅ O</div>
+          <% } %>
+          
+          <div class="bg-gold/20 text-gold text-xs py-2 rounded">●</div>
+          
+          <% if (connections.east) { %>
+            <form action="/game/move/<%= character.id %>/east" method="POST" class="inline">
+              <button type="submit" class="w-full bg-midnight hover:bg-gold/20 text-mist text-xs py-2 rounded border border-gold/20 transition-colors">
+                E ➡
+              </button>
+            </form>
+          <% } else { %>
+            <div class="bg-midnight/30 text-mist/20 text-xs py-2 rounded">E ➡</div>
+          <% } %>
+          
+          <div></div>
+          <% if (connections.south) { %>
+            <form action="/game/move/<%= character.id %>/south" method="POST" class="inline">
+              <button type="submit" class="w-full bg-midnight hover:bg-gold/20 text-mist text-xs py-2 rounded border border-gold/20 transition-colors">
+                ⬇ S
+              </button>
+            </form>
+          <% } else { %>
+            <div class="bg-midnight/30 text-mist/20 text-xs py-2 rounded">⬇ S</div>
+          <% } %>
+          <div></div>
+        </div>
+      </div>
+
+      <!-- Present Characters -->
+      <div class="p-4 flex-1 overflow-auto">
+        <%- include('../partials/present-characters', { presentCharacters: presentCharacters }) %>
+      </div>
+
+      <!-- Character Quick Stats -->
+      <div class="p-4 bg-midnight/30 border-t border-gold/10">
+        <div class="flex items-center gap-3 mb-3">
+          <% if (character.avatar_url) { %>
+            <img src="<%= character.avatar_url %>" class="w-12 h-12 rounded-full object-cover">
+          <% } else { %>
+            <div class="w-12 h-12 rounded-full bg-gold/20 flex items-center justify-center text-2xl">🧙</div>
+          <% } %>
+          <div>
+            <div class="font-title text-gold"><%= character.name %></div>
+            <div class="text-xs text-mist/50"><%= character.high_concept %></div>
+          </div>
+        </div>
+        
+        <!-- Fate Points Control -->
+        <div class="bg-midnight/50 rounded p-2 mb-2">
+          <div class="flex items-center justify-between">
+            <span class="text-mist/60 text-xs">Punti Fato</span>
+            <div class="flex items-center gap-2">
+              <form action="/api/character/<%= character.id %>/fate" method="POST" class="inline">
+                <input type="hidden" name="action" value="spend">
+                <input type="hidden" name="location_id" value="<%= location.id %>">
+                <button type="submit" class="w-6 h-6 rounded bg-blood/30 hover:bg-blood/50 text-mist text-sm transition-colors" title="Spendi">−</button>
+              </form>
+              <span class="text-gold font-bold text-lg w-6 text-center" id="fate-points"><%= character.fate_points %></span>
+              <form action="/api/character/<%= character.id %>/fate" method="POST" class="inline">
+                <input type="hidden" name="action" value="gain">
+                <input type="hidden" name="location_id" value="<%= location.id %>">
+                <button type="submit" class="w-6 h-6 rounded bg-gold/30 hover:bg-gold/50 text-mist text-sm transition-colors" title="Guadagna">+</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Stress Boxes -->
+        <div class="bg-midnight/50 rounded p-2">
+          <div class="flex items-center justify-between">
+            <span class="text-mist/60 text-xs">Stress</span>
+            <div class="flex items-center gap-1">
+              <form action="/api/character/<%= character.id %>/stress/1" method="POST" class="inline">
+                <input type="hidden" name="location_id" value="<%= location.id %>">
+                <button type="submit" 
+                        class="w-8 h-8 rounded border-2 text-sm transition-colors <%= character.stress_1 ? 'bg-blood border-blood text-white' : 'bg-transparent border-mist/40 text-mist/40 hover:border-blood/60' %>"
+                        title="Stress 1">
+                  <%= character.stress_1 ? '☒' : '1' %>
+                </button>
+              </form>
+              <form action="/api/character/<%= character.id %>/stress/2" method="POST" class="inline">
+                <input type="hidden" name="location_id" value="<%= location.id %>">
+                <button type="submit" 
+                        class="w-8 h-8 rounded border-2 text-sm transition-colors <%= character.stress_2 ? 'bg-blood border-blood text-white' : 'bg-transparent border-mist/40 text-mist/40 hover:border-blood/60' %>"
+                        title="Stress 2">
+                  <%= character.stress_2 ? '☒' : '2' %>
+                </button>
+              </form>
+              <form action="/api/character/<%= character.id %>/stress/3" method="POST" class="inline">
+                <input type="hidden" name="location_id" value="<%= location.id %>">
+                <button type="submit" 
+                        class="w-8 h-8 rounded border-2 text-sm transition-colors <%= character.stress_3 ? 'bg-blood border-blood text-white' : 'bg-transparent border-mist/40 text-mist/40 hover:border-blood/60' %>"
+                        title="Stress 3">
+                  <%= character.stress_3 ? '☒' : '3' %>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Chat Area -->
+    <main class="flex-1 flex flex-col bg-parchment/95 w-full md:w-auto">
+      <!-- Messages -->
+      <div id="messages-container" class="flex-1 overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-3"
+           hx-get="/api/messages/<%= location.id %>?after=0"
+           hx-trigger="load, every 3s"
+           hx-swap="innerHTML">
+        <div class="text-center text-ink/40 py-8">
+          <span class="animate-pulse">Caricamento messaggi...</span>
+        </div>
+      </div>
+
+      <!-- Message Input -->
+      <div class="border-t border-ink/10 bg-parchment p-2 sm:p-4">
+        <form id="message-form" action="/api/message" method="POST">
+          <input type="hidden" name="location_id" value="<%= location.id %>">
+          <input type="hidden" name="character_id" value="<%= character.id %>">
+          
+          <div class="flex gap-2 sm:gap-3 mb-2">
+            <label class="flex items-center gap-1 text-xs text-ink/60 cursor-pointer">
+              <input type="checkbox" name="is_action" class="rounded">
+              <span>🎭 <span class="hidden sm:inline">Azione</span></span>
+            </label>
+            <% if (isDestiny) { %>
+              <label class="flex items-center gap-1 text-xs text-gold cursor-pointer">
+                <input type="checkbox" name="is_destiny" class="rounded">
+                <span>🌙 <span class="hidden sm:inline">Destino</span></span>
+              </label>
+            <% } %>
+          </div>
+
+          <div class="flex gap-2">
+            <input type="text" name="content" required
+                   class="flex-1 px-3 sm:px-4 py-2 rounded-lg border border-ink/20 focus:border-gold focus:ring-1 focus:ring-gold outline-none text-sm sm:text-base"
+                   placeholder="Scrivi..."
+                   autocomplete="off">
+            <button type="submit" class="btn-primary px-3 sm:px-6 text-sm sm:text-base">
+              <span class="hidden sm:inline">Invia</span>
+              <span class="sm:hidden">➤</span>
+            </button>
+          </div>
+        </form>
+
+        <!-- Dice Roller -->
+        <div class="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-ink/10">
+          <form action="/api/roll" method="POST" class="flex flex-wrap sm:flex-nowrap items-center gap-2">
+            <input type="hidden" name="location_id" value="<%= location.id %>">
+            <input type="hidden" name="character_id" value="<%= character.id %>">
+            
+            <span class="text-sm text-ink/60">🎲</span>
+            <select name="approach" class="flex-1 sm:flex-none text-sm border border-ink/20 rounded px-2 py-1.5 bg-white">
+              <option value="careful">Cauto (+<%= character.careful %>)</option>
+              <option value="clever">Ingegnoso (+<%= character.clever %>)</option>
+              <option value="flashy">Appariscente (+<%= character.flashy %>)</option>
+              <option value="forceful">Vigoroso (+<%= character.forceful %>)</option>
+              <option value="quick">Rapido (+<%= character.quick %>)</option>
+              <option value="sneaky">Furtivo (+<%= character.sneaky %>)</option>
+            </select>
+            <input type="number" name="modifier" value="0" 
+                   class="w-14 sm:w-16 text-sm border border-ink/20 rounded px-2 py-1.5 text-center bg-white"
+                   placeholder="+/-">
+            <button type="submit" class="text-sm bg-midnight text-gold hover:bg-midnight/80 px-3 py-1.5 rounded transition-colors font-title">
+              🎲 Tira
+            </button>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Auto-scroll messages
+    const messagesContainer = document.getElementById('messages-container');
+    
+    function scrollToBottom() {
+      if (messagesContainer) {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+    }
+    
+    // Scroll on HTMX swap
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+      if (evt.detail.target.id === 'messages-container') {
+        setTimeout(scrollToBottom, 50);
+      }
+    });
+    
+    // Also scroll on settle for safety
+    document.body.addEventListener('htmx:afterSettle', function(evt) {
+      if (evt.detail.target.id === 'messages-container') {
+        setTimeout(scrollToBottom, 50);
+      }
+    });
+    
+    // Initial scroll after page load
+    window.addEventListener('load', function() {
+      setTimeout(scrollToBottom, 500);
+    });
+    
+    // Mobile Sidebar Toggle
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebar = document.getElementById('game-sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    
+    function toggleSidebar() {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('active');
+    }
+    
+    sidebarToggle?.addEventListener('click', toggleSidebar);
+    overlay?.addEventListener('click', toggleSidebar);
+    
+    // Close sidebar when clicking a navigation link on mobile
+    sidebar?.querySelectorAll('form button[type="submit"]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (window.innerWidth < 768) {
+          toggleSidebar();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

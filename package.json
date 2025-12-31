@@ -1,0 +1,35 @@
+{
+  "name": "cronache-di-avalon",
+  "version": "1.0.0",
+  "description": "GdR Play-By-Chat ispirato a Fate Accelerated",
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "tsx watch src/server.ts",
+    "db:init": "tsx src/db/init.ts"
+  },
+  "keywords": [
+    "rpg",
+    "play-by-chat",
+    "fate"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "sql.js": "^1.11.0"
+  },
+  "devDependencies": {
+    "@types/ejs": "^3.1.5",
+    "@types/express": "^5.0.0",
+    "@types/express-session": "^1.18.1",
+    "@types/node": "^22.10.2",
+    "@types/sql.js": "^1.4.9",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

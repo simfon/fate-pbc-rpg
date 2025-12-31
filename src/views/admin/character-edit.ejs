@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="it">
+<%- include('../partials/head', { title: 'Modifica Personaggio' }) %>
+<body class="min-h-screen bg-gradient-to-b from-parchment to-parchment-dark">
+  <!-- Header -->
+  <header class="bg-midnight/95 text-mist py-4 shadow-xl">
+    <div class="container mx-auto px-4 flex items-center justify-between">
+      <a href="/game" class="font-title text-xl text-gold hover:text-gold/80 transition-colors">
+        Cronache del Destino
+      </a>
+      <div class="flex items-center gap-4">
+        <span class="bg-blood/80 text-white text-xs px-2 py-1 rounded">ADMIN</span>
+        <a href="/admin" class="text-mist/70 hover:text-mist text-sm">← Pannello Admin</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8 max-w-2xl">
+    <h1 class="font-title text-3xl text-ink text-center mb-2">Modifica Personaggio</h1>
+    <p class="text-ink/60 text-center mb-8">
+      Proprietario: <strong><%= owner.username %></strong>
+    </p>
+
+    <form action="/admin/characters/<%= character.id %>" method="POST" class="card p-6 space-y-6">
+      <!-- Base Info -->
+      <div class="space-y-4">
+        <h2 class="font-title text-lg text-gold border-b border-gold/20 pb-2">Identità</h2>
+        
+        <div>
+          <label class="block text-sm font-medium text-ink mb-1">Nome</label>
+          <input type="text" name="name" required
+                 class="input-field w-full"
+                 value="<%= character.name %>">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-ink mb-1">Concetto</label>
+          <input type="text" name="concept"
+                 class="input-field w-full"
+                 value="<%= character.concept || '' %>">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-ink mb-1">Avatar URL</label>
+          <input type="url" name="avatar_url"
+                 class="input-field w-full"
+                 value="<%= character.avatar_url || '' %>">
+        </div>
+      </div>
+
+      <!-- Approaches -->
+      <div class="space-y-4">
+        <h2 class="font-title text-lg text-gold border-b border-gold/20 pb-2">Approcci</h2>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-ink mb-1">💪 Energico</label>
+            <input type="number" name="energico" min="-2" max="5" 
+                   class="input-field w-full" value="<%= character.energico %>">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-ink mb-1">🎭 Appariscente</label>
+            <input type="number" name="appariscente" min="-2" max="5" 
+                   class="input-field w-full" value="<%= character.appariscente %>">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-ink mb-1">🤝 Amichevole</label>
+            <input type="number" name="amichevole" min="-2" max="5" 
+                   class="input-field w-full" value="<%= character.amichevole %>">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-ink mb-1">🧠 Attento</label>
+            <input type="number" name="attento" min="-2" max="5" 
+                   class="input-field w-full" value="<%= character.attento %>">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-ink mb-1">🔮 Ingegnoso</label>
+            <input type="number" name="ingegnoso" min="-2" max="5" 
+                   class="input-field w-full" value="<%= character.ingegnoso %>">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-ink mb-1">🌑 Furtivo</label>
+            <input type="number" name="furtivo" min="-2" max="5" 
+                   class="input-field w-full" value="<%= character.furtivo %>">
+          </div>
+        </div>
+      </div>
+
+      <!-- Resources -->
+      <div class="space-y-4">
+        <h2 class="font-title text-lg text-gold border-b border-gold/20 pb-2">Risorse</h2>
+        
+        <div class="grid grid-cols-3 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-ink mb-1">Stress Fisico</label>
+            <input type="number" name="stress_fisico" min="0" max="10" 
+                   class="input-field w-full" value="<%= character.stress_fisico %>">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-ink mb-1">Max Fisico</label>
+            <input type="number" name="stress_fisico_max" min="1" max="10" 
+                   class="input-field w-full" value="<%= character.stress_fisico_max %>">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-ink mb-1">Punti Fato</label>
+            <input type="number" name="punti_fato" min="0" max="10" 
+                   class="input-field w-full" value="<%= character.punti_fato %>">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-ink mb-1">Stress Mentale</label>
+            <input type="number" name="stress_mentale" min="0" max="10" 
+                   class="input-field w-full" value="<%= character.stress_mentale %>">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-ink mb-1">Max Mentale</label>
+            <input type="number" name="stress_mentale_max" min="1" max="10" 
+                   class="input-field w-full" value="<%= character.stress_mentale_max %>">
+          </div>
+        </div>
+      </div>
+
+      <!-- Location -->
+      <div>
+        <label class="block text-sm font-medium text-ink mb-1">Posizione Corrente</label>
+        <select name="current_location_id" class="input-field w-full">
+          <% locations.forEach(function(loc) { %>
+            <option value="<%= loc.id %>" <%= character.current_location_id === loc.id ? 'selected' : '' %>>
+              <%= loc.name %>
+            </option>
+          <% }); %>
+        </select>
+      </div>
+
+      <div class="flex gap-4 pt-4">
+        <a href="/admin" class="flex-1 btn-secondary text-center py-3 font-title">Annulla</a>
+        <button type="submit" class="flex-1 btn-primary py-3 font-title">Salva Modifiche</button>
+      </div>
+    </form>
+
+    <form action="/admin/characters/<%= character.id %>/delete" method="POST" class="mt-6 text-center"
+          onsubmit="return confirm('ATTENZIONE: Questa azione è irreversibile. Eliminare questo personaggio?')">
+      <button type="submit" class="text-blood hover:underline text-sm">
+        🗑️ Elimina Personaggio
+      </button>
+    </form>
+  </main>
+</body>
+</html>

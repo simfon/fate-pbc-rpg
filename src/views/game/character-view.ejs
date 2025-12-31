@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="it">
+<%- include('../partials/head', { title: character.name }) %>
+<body class="min-h-screen bg-gradient-to-b from-parchment to-parchment-dark">
+  <!-- Header -->
+  <header class="bg-midnight/95 text-mist py-3 sm:py-4 shadow-xl">
+    <div class="container mx-auto px-4 flex items-center justify-between">
+      <a href="/game" class="font-title text-lg sm:text-xl text-gold hover:text-gold/80 transition-colors">
+        <span class="hidden sm:inline">Cronache del Destino</span>
+        <span class="sm:hidden">CdD</span>
+      </a>
+      <a href="/game" class="text-mist/70 hover:text-mist text-sm">← <span class="hidden sm:inline">Torna ai</span> personaggi</a>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-4 sm:py-8 max-w-3xl">
+    <!-- Character Header -->
+    <div class="card overflow-hidden mb-4 sm:mb-6">
+      <div class="h-32 sm:h-40 bg-gradient-to-br from-midnight to-midnight/80 relative flex items-center justify-center">
+        <% if (character.avatar_url) { %>
+          <img src="<%= character.avatar_url %>" alt="<%= character.name %>" 
+               class="w-full h-full object-cover opacity-60">
+        <% } %>
+        <div class="absolute inset-0 flex items-end p-4 sm:p-6 bg-gradient-to-t from-midnight/90 to-transparent">
+          <div>
+            <h1 class="font-title text-2xl sm:text-3xl text-gold mb-1"><%= character.name %></h1>
+            <p class="text-mist/80 italic text-sm sm:text-base"><%= character.high_concept || 'Nessun concetto' %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Stats Column -->
+      <div class="md:col-span-1 space-y-4">
+        <!-- Stress -->
+        <div class="card p-4">
+          <h3 class="font-title text-sm text-gold/80 mb-3">Stress</h3>
+          <div class="flex gap-2">
+            <div class="w-8 h-8 rounded border-2 flex items-center justify-center <%= character.stress_1 ? 'bg-blood border-blood text-white' : 'border-ink/30' %>">
+              1
+            </div>
+            <div class="w-8 h-8 rounded border-2 flex items-center justify-center <%= character.stress_2 ? 'bg-blood border-blood text-white' : 'border-ink/30' %>">
+              2
+            </div>
+            <div class="w-8 h-8 rounded border-2 flex items-center justify-center <%= character.stress_3 ? 'bg-blood border-blood text-white' : 'border-ink/30' %>">
+              3
+            </div>
+          </div>
+        </div>
+
+        <!-- Fate Points -->
+        <div class="card p-4">
+          <h3 class="font-title text-sm text-gold/80 mb-3">Punti Fato</h3>
+          <div class="flex items-center gap-2">
+            <% for (let i = 0; i < character.fate_points; i++) { %>
+              <span class="text-2xl">✨</span>
+            <% } %>
+            <% if (character.fate_points === 0) { %>
+              <span class="text-ink/40 italic text-sm">Nessun punto fato</span>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Consequences -->
+        <div class="card p-4">
+          <h3 class="font-title text-sm text-gold/80 mb-3">Conseguenze</h3>
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between">
+              <span class="text-ink/60">Lieve (-2):</span>
+              <span class="<%= character.mild_consequence ? 'text-blood' : 'text-ink/30 italic' %>">
+                <%= character.mild_consequence || 'Nessuna' %>
+              </span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-ink/60">Moderata (-4):</span>
+              <span class="<%= character.moderate_consequence ? 'text-blood' : 'text-ink/30 italic' %>">
+                <%= character.moderate_consequence || 'Nessuna' %>
+              </span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-ink/60">Grave (-6):</span>
+              <span class="<%= character.severe_consequence ? 'text-blood' : 'text-ink/30 italic' %>">
+                <%= character.severe_consequence || 'Nessuna' %>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <% if (isOwner) { %>
+          <a href="/game/play/<%= character.id %>" class="btn-primary w-full py-3 text-center block font-title">
+            ▶ Gioca con questo personaggio
+          </a>
+        <% } %>
+      </div>
+
+      <!-- Main Column -->
+      <div class="md:col-span-2 space-y-6">
+        <!-- Approaches -->
+        <div class="card p-4">
+          <h3 class="font-title text-lg text-gold mb-4">Approcci</h3>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="flex items-center justify-between p-2 bg-midnight/5 rounded">
+              <span>🛡️ Cauto</span>
+              <span class="font-bold text-lg text-gold"><%= character.careful >= 0 ? '+' : '' %><%= character.careful %></span>
+            </div>
+            <div class="flex items-center justify-between p-2 bg-midnight/5 rounded">
+              <span>🧠 Ingegnoso</span>
+              <span class="font-bold text-lg text-gold"><%= character.clever >= 0 ? '+' : '' %><%= character.clever %></span>
+            </div>
+            <div class="flex items-center justify-between p-2 bg-midnight/5 rounded">
+              <span>🎭 Appariscente</span>
+              <span class="font-bold text-lg text-gold"><%= character.flashy >= 0 ? '+' : '' %><%= character.flashy %></span>
+            </div>
+            <div class="flex items-center justify-between p-2 bg-midnight/5 rounded">
+              <span>💪 Vigoroso</span>
+              <span class="font-bold text-lg text-gold"><%= character.forceful >= 0 ? '+' : '' %><%= character.forceful %></span>
+            </div>
+            <div class="flex items-center justify-between p-2 bg-midnight/5 rounded">
+              <span>⚡ Rapido</span>
+              <span class="font-bold text-lg text-gold"><%= character.quick >= 0 ? '+' : '' %><%= character.quick %></span>
+            </div>
+            <div class="flex items-center justify-between p-2 bg-midnight/5 rounded">
+              <span>🌑 Furtivo</span>
+              <span class="font-bold text-lg text-gold"><%= character.sneaky >= 0 ? '+' : '' %><%= character.sneaky %></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aspects -->
+        <div class="card p-4">
+          <h3 class="font-title text-lg text-gold mb-4">Aspetti</h3>
+          <div class="space-y-3">
+            <div>
+              <div class="text-xs text-ink/50 uppercase tracking-wider mb-1">Concetto Chiave</div>
+              <p class="text-ink"><%= character.high_concept || '-' %></p>
+            </div>
+            <div>
+              <div class="text-xs text-ink/50 uppercase tracking-wider mb-1">Problema</div>
+              <p class="text-blood"><%= character.trouble || '-' %></p>
+            </div>
+            <% if (character.aspect_1) { %>
+              <div>
+                <div class="text-xs text-ink/50 uppercase tracking-wider mb-1">Aspetto 1</div>
+                <p class="text-ink"><%= character.aspect_1 %></p>
+              </div>
+            <% } %>
+            <% if (character.aspect_2) { %>
+              <div>
+                <div class="text-xs text-ink/50 uppercase tracking-wider mb-1">Aspetto 2</div>
+                <p class="text-ink"><%= character.aspect_2 %></p>
+              </div>
+            <% } %>
+            <% if (character.aspect_3) { %>
+              <div>
+                <div class="text-xs text-ink/50 uppercase tracking-wider mb-1">Aspetto 3</div>
+                <p class="text-ink"><%= character.aspect_3 %></p>
+              </div>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Location -->
+        <div class="card p-4">
+          <h3 class="font-title text-lg text-gold mb-4">Posizione Attuale</h3>
+          <p class="text-ink">
+            📍 <%= character.location_name || 'Sconosciuta' %>
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

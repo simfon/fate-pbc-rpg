@@ -1,0 +1,154 @@
+<%
+// Helper function per parsare i tiri di dado
+function parseDiceRoll(content) {
+  // Cerca il pattern ROLL| e prendi tutto dopo
+  const rollIndex = content.indexOf('ROLL|');
+  if (rollIndex === -1) return null;
+  
+  const rollData = content.substring(rollIndex + 5); // dopo "ROLL|"
+  const parts = rollData.split('|');
+  if (parts.length < 7) return null;
+  
+  return {
+    approach: parts[0],
+    dice: parts[1].split(',').map(Number),
+    diceTotal: parseInt(parts[2]),
+    approachValue: parseInt(parts[3]),
+    modifier: parseInt(parts[4]),
+    total: parseInt(parts[5]),
+    approachName: parts[6]
+  };
+}
+
+// Helper function per formattare testo: <testo> diventa corsivo mantenendo < e >
+function formatMessageText(text) {
+  // Escape HTML first
+  const escaped = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  // Ora sostituiamo &lt;...&gt; con <...> in corsivo (mantenendo i delimitatori)
+  return escaped.replace(/&lt;([^&]+)&gt;/g, '<em class="text-ink/60">&lt;$1&gt;</em>');
+}
+%>
+<% messages.forEach(function(msg) { %>
+  <%
+    // Controlla se è un tiro di dado (contiene ROLL|)
+    const diceRoll = (msg.is_action && msg.content && msg.content.includes('ROLL|')) ? parseDiceRoll(msg.content) : null;
+  %>
+  <div class="message p-2 sm:p-3 rounded-lg <%= msg.is_destiny ? 'message-destiny' : msg.is_ooc ? 'message-ooc' : (msg.is_action && !diceRoll) ? 'message-action-intent' : 'bg-white shadow-sm' %>" data-id="<%= msg.id %>">
+    <% if (msg.is_destiny) { %>
+      <div class="flex items-start gap-2 sm:gap-3">
+        <span class="text-xl sm:text-2xl">🌙</span>
+        <div class="flex-1 min-w-0">
+          <div class="font-title text-xs sm:text-sm text-gold/80 mb-1">Il Destino sussurra...</div>
+          <p class="text-gold leading-relaxed text-sm sm:text-base break-words"><%= msg.content %></p>
+          <div class="text-xs text-gold/40 mt-2">
+            <%= new Date(msg.created_at).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) %>
+          </div>
+        </div>
+      </div>
+    <% } else if (msg.is_ooc) { %>
+      <div class="flex items-start gap-2">
+        <div class="flex-1 min-w-0">
+          <span class="font-title text-xs text-ink/50">[OOC] <%= msg.character_name || msg.username %>:</span>
+          <span class="text-ink/70 text-sm break-words"><%= msg.content %></span>
+        </div>
+        <div class="text-xs text-ink/30 shrink-0">
+          <%= new Date(msg.created_at).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) %>
+        </div>
+      </div>
+    <% } else if (diceRoll) { %>
+      <!-- Tiro di Dado Grafico -->
+      <div class="flex items-start gap-2 sm:gap-3">
+        <% if (msg.character_avatar) { %>
+          <img src="<%= msg.character_avatar %>" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover shrink-0">
+        <% } else { %>
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-midnight/10 flex items-center justify-center shrink-0">
+            <span>🧙</span>
+          </div>
+        <% } %>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-baseline gap-2 mb-1 flex-wrap">
+            <a href="/game/character/<%= msg.character_id %>" class="font-title text-sm text-ink hover:text-gold">
+              <%= msg.character_name || 'Anonimo' %>
+            </a>
+            <span class="text-xs text-ink/50">tira <%= diceRoll.approachName %></span>
+            <span class="text-xs text-ink/40">
+              <%= new Date(msg.created_at).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) %>
+            </span>
+          </div>
+          
+          <!-- Dice Result - Outcome first, then details -->
+          <div class="flex flex-wrap items-center gap-2">
+            <% if (diceRoll.total >= 5) { %>
+              <span class="dice-outcome epic">✨ Epico!</span>
+            <% } else if (diceRoll.total >= 3) { %>
+              <span class="dice-outcome success">✓ Successo</span>
+            <% } else if (diceRoll.total >= 0) { %>
+              <span class="dice-outcome tie">↔ Parità</span>
+            <% } else { %>
+              <span class="dice-outcome failure">✗ Fallimento</span>
+            <% } %>
+            
+            <span class="text-ink/40 text-xs">|</span>
+            
+            <div class="flex items-center gap-1 text-xs text-ink/50">
+              <div class="fate-dice">
+                <% diceRoll.dice.forEach(function(d) { %>
+                  <span class="fate-die <%= d === 1 ? 'plus' : d === -1 ? 'minus' : 'blank' %>"><%= d === 1 ? '+' : d === -1 ? '−' : '' %></span>
+                <% }); %>
+              </div>
+              <span class="font-mono"><%= diceRoll.diceTotal >= 0 ? '+' : '' %><%= diceRoll.diceTotal %></span>
+              <span>+</span>
+              <span class="font-mono"><%= diceRoll.approachValue %></span>
+              <% if (diceRoll.modifier !== 0) { %>
+                <span><%= diceRoll.modifier > 0 ? '+' : '' %><%= diceRoll.modifier %></span>
+              <% } %>
+              <span>=</span>
+              <span class="dice-total"><%= diceRoll.total >= 0 ? '+' : '' %><%= diceRoll.total %></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% } else if (msg.is_action && !diceRoll) { %>
+      <!-- Messaggio Azione/Intento -->
+      <div class="flex items-start gap-2 sm:gap-3">
+        <span class="text-xl sm:text-2xl">⚔️</span>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-baseline gap-2 mb-1 flex-wrap">
+            <a href="/game/character/<%= msg.character_id %>" class="font-title text-sm text-sky-300 hover:text-sky-200">
+              <%= msg.character_name || 'Anonimo' %>
+            </a>
+            <span class="text-xs text-sky-400/60">tenta di...</span>
+            <span class="text-xs text-sky-400/40">
+              <%= new Date(msg.created_at).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) %>
+            </span>
+          </div>
+          <p class="text-sky-100 leading-relaxed text-sm sm:text-base italic"><%= msg.content %></p>
+        </div>
+      </div>
+    <% } else if (!diceRoll) { %>
+      <div class="flex items-start gap-2 sm:gap-3">
+        <% if (msg.character_avatar) { %>
+          <img src="<%= msg.character_avatar %>" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover shrink-0">
+        <% } else { %>
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-midnight/10 flex items-center justify-center shrink-0">
+            <span>🧙</span>
+          </div>
+        <% } %>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-baseline gap-2 mb-1 flex-wrap">
+            <a href="/game/character/<%= msg.character_id %>" class="font-title text-sm text-ink hover:text-gold">
+              <%= msg.character_name || 'Anonimo' %>
+            </a>
+            <span class="text-xs text-ink/40">
+              <%= new Date(msg.created_at).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) %>
+            </span>
+          </div>
+          <p class="text-ink leading-relaxed text-sm sm:text-base break-words"><%- formatMessageText(msg.content) %></p>
+        </div>
+      </div>
+    <% } %>
+  </div>
+<% }); %>

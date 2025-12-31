@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <%- include('partials/head', { title: 'Accedi' }) %>
+</head>
+<body class="font-body text-ink">
+  <div class="min-h-screen flex items-center justify-center p-4">
+    <div class="parchment-bg rounded-lg p-8 max-w-md w-full shadow-2xl">
+      <div class="text-center mb-8">
+        <h1 class="font-title text-3xl text-ink mb-2">Accedi</h1>
+        <p class="text-ink/60">Bentornato nelle Cronache</p>
+      </div>
+      
+      <% if (error) { %>
+        <div class="bg-blood/10 border border-blood text-blood px-4 py-3 rounded mb-6">
+          <%= error %>
+        </div>
+      <% } %>
+      
+      <form method="POST" action="/login" class="space-y-6">
+        <div>
+          <label class="block font-title text-sm mb-2" for="username">Username</label>
+          <input type="text" id="username" name="username" required
+                 class="w-full px-4 py-3 border-2 border-ink/20 rounded bg-white/50 focus:border-gold focus:outline-none transition-colors"
+                 placeholder="Il tuo nome da viandante">
+        </div>
+        
+        <div>
+          <label class="block font-title text-sm mb-2" for="password">Password</label>
+          <input type="password" id="password" name="password" required
+                 class="w-full px-4 py-3 border-2 border-ink/20 rounded bg-white/50 focus:border-gold focus:outline-none transition-colors"
+                 placeholder="La tua parola segreta">
+        </div>
+        
+        <button type="submit" 
+                class="w-full py-3 px-6 bg-midnight text-gold font-title text-lg rounded hover:bg-midnight/90 transition-colors">
+          Entra nel Regno
+        </button>
+      </form>
+      
+      <div class="mt-6 text-center">
+        <p class="text-ink/60">
+          Non hai un account? 
+          <a href="/register" class="text-gold hover:underline">Registrati</a>
+        </p>
+      </div>
+      
+      <div class="mt-4 text-center">
+        <a href="/" class="text-ink/40 hover:text-ink/60 text-sm">← Torna alla home</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="it">
+<%- include('../partials/head', { title: 'I Tuoi Personaggi' }) %>
+<body class="min-h-screen bg-gradient-to-b from-parchment to-parchment-dark">
+  <!-- Header -->
+  <header class="bg-midnight/95 text-mist py-3 sm:py-4 shadow-xl">
+    <div class="container mx-auto px-4 flex items-center justify-between">
+      <a href="/game" class="font-title text-lg sm:text-xl text-gold hover:text-gold/80 transition-colors">
+        <span class="hidden sm:inline">Cronache del Destino</span>
+        <span class="sm:hidden">CdD</span>
+      </a>
+      <div class="flex items-center gap-2 sm:gap-4">
+        <span class="hidden sm:inline text-mist/70 text-sm">Bentornato, <strong><%= user.username %></strong></span>
+        <% if (user.is_admin) { %>
+          <a href="/admin" class="text-gold/70 hover:text-gold text-sm">⚙️</a>
+        <% } %>
+        <form action="/auth/logout" method="POST" class="inline">
+          <button type="submit" class="text-blood/70 hover:text-blood text-sm">Esci</button>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-4 sm:py-8">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
+      <h1 class="font-title text-2xl sm:text-3xl text-ink">I Tuoi Personaggi</h1>
+      <a href="/game/character/create" class="btn-primary px-4 py-2 font-title text-sm sm:text-base w-full sm:w-auto text-center">
+        + Nuovo Personaggio
+      </a>
+    </div>
+
+    <% if (characters.length === 0) { %>
+      <div class="text-center py-16">
+        <div class="text-6xl mb-4">📜</div>
+        <h2 class="font-title text-2xl text-ink mb-2">Nessun personaggio ancora</h2>
+        <p class="text-ink/60 mb-6">Crea il tuo primo personaggio per iniziare l'avventura!</p>
+        <a href="/game/character/create" class="btn-primary px-6 py-3 font-title text-lg">
+          Crea Personaggio
+        </a>
+      </div>
+    <% } else { %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <% characters.forEach(function(char) { %>
+          <div class="card group hover:shadow-xl transition-all duration-300 overflow-hidden">
+            <div class="h-32 bg-gradient-to-br from-midnight/20 to-midnight/5 relative flex items-center justify-center">
+              <% if (char.avatar_url) { %>
+                <img src="<%= char.avatar_url %>" alt="<%= char.name %>" 
+                     class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
+              <% } else { %>
+                <span class="text-6xl opacity-50">🧙</span>
+              <% } %>
+            </div>
+            <div class="p-4">
+              <h3 class="font-title text-xl text-ink mb-1"><%= char.name %></h3>
+              <p class="text-ink/60 text-sm mb-4 line-clamp-2"><%= char.high_concept || 'Nessun concetto' %></p>
+              
+              <div class="grid grid-cols-3 gap-2 text-xs text-center mb-4">
+                <div class="bg-midnight/5 rounded p-1">
+                  <div class="font-bold <%= char.stress_1 || char.stress_2 || char.stress_3 ? 'text-blood' : 'text-gold' %>">
+                    <%= (char.stress_1 ? 1 : 0) + (char.stress_2 ? 1 : 0) + (char.stress_3 ? 1 : 0) %>/3
+                  </div>
+                  <div class="text-ink/50">Stress</div>
+                </div>
+                <div class="bg-midnight/5 rounded p-1">
+                  <div class="font-bold text-gold"><%= char.fate_points %></div>
+                  <div class="text-ink/50">Fato</div>
+                </div>
+                <div class="bg-midnight/5 rounded p-1">
+                  <div class="font-bold text-midnight text-xs leading-tight"><%= char.location_name ? char.location_name.substring(0, 10) : '?' %></div>
+                  <div class="text-ink/50">Luogo</div>
+                </div>
+              </div>
+              
+              <div class="flex gap-2">
+                <a href="/game/play/<%= char.id %>" 
+                   class="flex-1 btn-primary text-center py-2 text-sm">
+                  ▶ Gioca
+                </a>
+                <a href="/game/character/<%= char.id %>" 
+                   class="px-3 py-2 border border-ink/20 text-ink/60 hover:text-ink hover:border-ink/40 rounded text-sm transition-colors">
+                  📋
+                </a>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } %>
+  </main>
+
+  <footer class="bg-midnight/10 py-6 mt-16">
+    <div class="container mx-auto px-4 text-center text-ink/50 text-sm">
+      Cronache del Destino &copy; 2024 - Ispirato a Fate Accelerato
+    </div>
+  </footer>
+</body>
+</html>

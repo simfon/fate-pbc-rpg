@@ -1,0 +1,22 @@
+<nav class="bg-midnight border-b border-gold/20 py-3">
+  <div class="container mx-auto px-4 flex items-center justify-between">
+    <div class="flex items-center gap-6">
+      <a href="/admin" class="font-title text-lg text-gold hover:text-gold/80 transition-colors">
+        🛡️ Admin Panel
+      </a>
+      <div class="flex items-center gap-4">
+        <a href="/admin/users" class="text-mist/70 hover:text-mist text-sm">👥 Utenti</a>
+        <a href="/admin/locations" class="text-mist/70 hover:text-mist text-sm">📍 Location</a>
+        <a href="/admin/invites" class="text-mist/70 hover:text-mist text-sm">🎟️ Inviti</a>
+        <a href="/admin/characters" class="text-mist/70 hover:text-mist text-sm">📋 Personaggi</a>
+        <a href="/admin/messages" class="text-mist/70 hover:text-mist text-sm">📜 Messaggi</a>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <a href="/game" class="text-mist/70 hover:text-mist text-sm">🎮 Gioca</a>
+      <form action="/logout" method="POST" class="inline">
+        <button type="submit" class="text-blood/70 hover:text-blood text-sm">Esci</button>
+      </form>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="it">
+<%- include('../partials/head', { title: 'Crea Personaggio' }) %>
+<body class="min-h-screen bg-gradient-to-b from-parchment to-parchment-dark">
+  <!-- Header -->
+  <header class="bg-midnight/95 text-mist py-4 shadow-xl">
+    <div class="container mx-auto px-4 flex items-center justify-between">
+      <a href="/game" class="font-title text-xl text-gold hover:text-gold/80 transition-colors">
+        Cronache del Destino
+      </a>
+      <a href="/game" class="text-mist/70 hover:text-mist text-sm">← Torna ai personaggi</a>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8 max-w-2xl">
+    <h1 class="font-title text-3xl text-ink text-center mb-2">Crea il Tuo Personaggio</h1>
+    <p class="text-ink/60 text-center mb-8">Dai vita a un nuovo eroe per le Cronache del Destino</p>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="bg-blood/10 border border-blood/30 text-blood px-4 py-3 rounded mb-6">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <form action="/game/character/create" method="POST" class="card p-6 space-y-6">
+      <!-- Base Info -->
+      <div class="space-y-4">
+        <h2 class="font-title text-lg text-gold border-b border-gold/20 pb-2">Identità</h2>
+        
+        <div>
+          <label class="block text-sm font-medium text-ink mb-1">Nome del Personaggio *</label>
+          <input type="text" name="name" required
+                 class="input-field w-full"
+                 placeholder="Es. Arwen la Guardiana">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-ink mb-1">Avatar URL (opzionale)</label>
+          <input type="url" name="avatar_url"
+                 class="input-field w-full"
+                 placeholder="https://esempio.com/immagine.jpg">
+        </div>
+      </div>
+
+      <!-- Approaches -->
+      <div class="space-y-4">
+        <h2 class="font-title text-lg text-gold border-b border-gold/20 pb-2">Approcci</h2>
+        <p class="text-sm text-ink/70">
+          Distribuisci i valori <strong>+3, +2, +2, +1, +1, +0</strong> tra i sei approcci.
+          Ogni approccio rappresenta <em>come</em> il tuo personaggio affronta le situazioni.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-midnight/5 p-3 rounded">
+            <label class="block text-sm font-medium text-ink mb-1">
+              �️ Cauto
+              <span class="text-ink/50 font-normal">- Presti attenzione ai dettagli</span>
+            </label>
+            <select name="careful" required class="input-field w-full">
+              <option value="">Scegli...</option>
+              <option value="3">+3</option>
+              <option value="2">+2</option>
+              <option value="1">+1</option>
+              <option value="0">+0</option>
+            </select>
+          </div>
+
+          <div class="bg-midnight/5 p-3 rounded">
+            <label class="block text-sm font-medium text-ink mb-1">
+              🧠 Ingegnoso
+              <span class="text-ink/50 font-normal">- Pensi veloce e risolvi problemi</span>
+            </label>
+            <select name="clever" required class="input-field w-full">
+              <option value="">Scegli...</option>
+              <option value="3">+3</option>
+              <option value="2">+2</option>
+              <option value="1">+1</option>
+              <option value="0">+0</option>
+            </select>
+          </div>
+
+          <div class="bg-midnight/5 p-3 rounded">
+            <label class="block text-sm font-medium text-ink mb-1">
+              🎭 Appariscente
+              <span class="text-ink/50 font-normal">- Attiri l'attenzione su di te</span>
+            </label>
+            <select name="flashy" required class="input-field w-full">
+              <option value="">Scegli...</option>
+              <option value="3">+3</option>
+              <option value="2">+2</option>
+              <option value="1">+1</option>
+              <option value="0">+0</option>
+            </select>
+          </div>
+
+          <div class="bg-midnight/5 p-3 rounded">
+            <label class="block text-sm font-medium text-ink mb-1">
+              💪 Vigoroso
+              <span class="text-ink/50 font-normal">- Usi la forza bruta</span>
+            </label>
+            <select name="forceful" required class="input-field w-full">
+              <option value="">Scegli...</option>
+              <option value="3">+3</option>
+              <option value="2">+2</option>
+              <option value="1">+1</option>
+              <option value="0">+0</option>
+            </select>
+          </div>
+
+          <div class="bg-midnight/5 p-3 rounded">
+            <label class="block text-sm font-medium text-ink mb-1">
+              ⚡ Rapido
+              <span class="text-ink/50 font-normal">- Ti muovi veloce</span>
+            </label>
+            <select name="quick" required class="input-field w-full">
+              <option value="">Scegli...</option>
+              <option value="3">+3</option>
+              <option value="2">+2</option>
+              <option value="1">+1</option>
+              <option value="0">+0</option>
+            </select>
+          </div>
+
+          <div class="bg-midnight/5 p-3 rounded">
+            <label class="block text-sm font-medium text-ink mb-1">
+              🌑 Furtivo
+              <span class="text-ink/50 font-normal">- Agisci senza essere notato</span>
+            </label>
+            <select name="sneaky" required class="input-field w-full">
+              <option value="">Scegli...</option>
+              <option value="3">+3</option>
+              <option value="2">+2</option>
+              <option value="1">+1</option>
+              <option value="0">+0</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Aspects -->
+      <div class="space-y-4">
+        <h2 class="font-title text-lg text-gold border-b border-gold/20 pb-2">Aspetti</h2>
+        <p class="text-sm text-ink/70">
+          Gli aspetti sono frasi che descrivono qualcosa di importante del tuo personaggio.
+          Possono essere invocati o compellati durante il gioco.
+        </p>
+
+        <div>
+          <label class="block text-sm font-medium text-ink mb-1">Concetto Chiave *</label>
+          <input type="text" name="high_concept" required
+                 class="input-field w-full"
+                 placeholder="Es. Paladina esiliata in cerca di redenzione">
+          <p class="text-xs text-ink/50 mt-1">Una breve frase che descrive chi è il tuo personaggio</p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-ink mb-1">Problema *</label>
+          <input type="text" name="trouble" required
+                 class="input-field w-full"
+                 placeholder="Es. Braccato dalla gilda degli assassini">
+          <p class="text-xs text-ink/50 mt-1">Una complicazione ricorrente nella tua vita</p>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <div class="flex gap-4 pt-4">
+        <a href="/game" class="flex-1 btn-secondary text-center py-3 font-title">Annulla</a>
+        <button type="submit" class="flex-1 btn-primary py-3 font-title">Crea Personaggio</button>
+      </div>
+    </form>
+  </main>
+</body>
+</html>

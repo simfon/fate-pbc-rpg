@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="it">
+<%- include('../partials/head', { title: 'Storico Messaggi - Admin' }) %>
+<body class="min-h-screen bg-parchment">
+  <%- include('../partials/admin-nav') %>
+  
+  <main class="container mx-auto px-4 py-8">
+    <div class="card max-w-6xl mx-auto">
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="font-title text-2xl text-ink">📜 Storico Messaggi</h1>
+        <a href="/admin" class="text-sm text-ink/60 hover:text-ink">← Torna alla Dashboard</a>
+      </div>
+      
+      <!-- Location Selector -->
+      <form method="GET" class="mb-6">
+        <div class="flex gap-4 items-end">
+          <div class="flex-1">
+            <label class="block text-sm text-ink/70 mb-1">Seleziona Location</label>
+            <select name="location_id" class="w-full input-field">
+              <option value="">-- Scegli una location --</option>
+              <% locations.forEach(loc => { %>
+                <option value="<%= loc.id %>" <%= selectedLocation && selectedLocation.id === loc.id ? 'selected' : '' %>>
+                  <%= loc.name %>
+                </option>
+              <% }); %>
+            </select>
+          </div>
+          <button type="submit" class="btn-primary">
+            Carica Messaggi
+          </button>
+        </div>
+      </form>
+      
+      <% if (selectedLocation) { %>
+        <div class="border-t border-ink/10 pt-6">
+          <h2 class="font-title text-xl text-gold mb-4">
+            📍 <%= selectedLocation.name %>
+            <span class="text-sm text-ink/50 font-sans ml-2">(<%= messages.length %> messaggi)</span>
+          </h2>
+          
+          <% if (messages.length === 0) { %>
+            <p class="text-ink/50 text-center py-8">Nessun messaggio in questa location.</p>
+          <% } else { %>
+            <div class="space-y-2 max-h-[600px] overflow-y-auto">
+              <% messages.forEach(msg => { %>
+                <div class="flex items-start gap-3 p-3 rounded-lg <%= msg.is_destiny ? 'bg-gold/10 border border-gold/20' : msg.is_action ? 'bg-midnight/5 border border-midnight/10' : 'bg-white/50' %>">
+                  <!-- Avatar -->
+                  <div class="flex-shrink-0">
+                    <% if (msg.is_destiny) { %>
+                      <div class="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center text-lg">🌙</div>
+                    <% } else if (msg.character_avatar) { %>
+                      <img src="<%= msg.character_avatar %>" class="w-10 h-10 rounded-full object-cover">
+                    <% } else { %>
+                      <div class="w-10 h-10 rounded-full bg-midnight/10 flex items-center justify-center text-lg">🧙</div>
+                    <% } %>
+                  </div>
+                  
+                  <!-- Content -->
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="font-semibold text-ink">
+                        <% if (msg.is_destiny) { %>
+                          <span class="text-gold">Il Destino</span>
+                        <% } else { %>
+                          <%= msg.character_name || 'Sistema' %>
+                        <% } %>
+                      </span>
+                      <span class="text-xs text-ink/40">@<%= msg.username %></span>
+                      <span class="text-xs text-ink/30"><%= new Date(msg.created_at).toLocaleString('it-IT') %></span>
+                      <% if (msg.is_action) { %><span class="text-xs bg-midnight/10 px-1 rounded">🎭 Azione</span><% } %>
+                      <% if (msg.is_ooc) { %><span class="text-xs bg-ink/10 px-1 rounded">💬 OOC</span><% } %>
+                    </div>
+                    <p class="text-ink <%= msg.is_action ? 'italic' : '' %>"><%= msg.content %></p>
+                  </div>
+                  
+                  <!-- Delete Button -->
+                  <form action="/admin/messages/<%= msg.id %>/delete" method="POST" 
+                        onsubmit="return confirm('Eliminare questo messaggio?')">
+                    <button type="submit" class="text-blood/50 hover:text-blood text-sm p-1" title="Elimina">
+                      🗑️
+                    </button>
+                  </form>
+                </div>
+              <% }); %>
+            </div>
+          <% } %>
+        </div>
+      <% } else { %>
+        <p class="text-ink/50 text-center py-8">Seleziona una location per vedere i messaggi.</p>
+      <% } %>
+    </div>
+  </main>
+</body>
+</html>

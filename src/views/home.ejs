@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <%- include('partials/head', { title: 'Home' }) %>
+</head>
+<body class="font-body text-ink">
+  <div class="min-h-screen flex items-center justify-center p-4">
+    <div class="text-center">
+      <div class="mb-8">
+        <h1 class="font-title text-5xl md:text-7xl text-gold mb-4 tracking-wider">
+          Cronache del Destino
+        </h1>
+        <p class="text-mist text-xl md:text-2xl font-body italic">
+          Un gioco di ruolo play-by-chat
+        </p>
+      </div>
+      
+      <div class="parchment-bg rounded-lg p-8 max-w-md mx-auto shadow-2xl">
+        <div class="mb-6">
+          <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-midnight flex items-center justify-center">
+            <span class="text-3xl">⚔️</span>
+          </div>
+          <p class="text-ink/80 mb-6">
+            Benvenuto, viandante. Le Cronache del Destino attendono nuovi eroi.
+            Accedi al tuo account o registrati con un codice invito.
+          </p>
+        </div>
+        
+        <div class="space-y-4">
+          <a href="/login" 
+             class="block w-full py-3 px-6 bg-midnight text-gold font-title text-lg rounded hover:bg-midnight/90 transition-colors text-center">
+            Accedi
+          </a>
+          <a href="/register" 
+             class="block w-full py-3 px-6 border-2 border-midnight text-midnight font-title text-lg rounded hover:bg-midnight/10 transition-colors text-center">
+            Registrati con Invito
+          </a>
+        </div>
+      </div>
+      
+      <p class="text-mist/60 mt-8 text-sm">
+        Sistema di gioco ispirato a Fate Accelerated
+      </p>
+    </div>
+  </div>
+</body>
+</html>

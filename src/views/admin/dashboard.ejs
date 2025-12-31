@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="it">
+<%- include('../partials/head', { title: 'Pannello Admin' }) %>
+<body class="min-h-screen bg-gradient-to-b from-parchment to-parchment-dark">
+  <!-- Header -->
+  <header class="bg-midnight/95 text-mist py-4 shadow-xl">
+    <div class="container mx-auto px-4 flex items-center justify-between">
+      <a href="/game" class="font-title text-xl text-gold hover:text-gold/80 transition-colors">
+        Cronache del Destino
+      </a>
+      <div class="flex items-center gap-4">
+        <span class="bg-blood/80 text-white text-xs px-2 py-1 rounded">ADMIN</span>
+        <a href="/game" class="text-mist/70 hover:text-mist text-sm">← Torna al gioco</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <h1 class="font-title text-3xl text-ink mb-8">Pannello Amministrazione</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Users -->
+      <a href="/admin/users" class="card p-6 hover:shadow-xl transition-all group">
+        <div class="text-4xl mb-4">👥</div>
+        <h2 class="font-title text-xl text-ink group-hover:text-gold transition-colors">Gestione Utenti</h2>
+        <p class="text-ink/60 text-sm mt-2">Modera utenti, assegna ruoli, gestisci ban</p>
+        <div class="mt-4 text-sm text-gold">
+          <%= stats.users %> utenti registrati
+        </div>
+      </a>
+
+      <!-- Locations -->
+      <a href="/admin/locations" class="card p-6 hover:shadow-xl transition-all group">
+        <div class="text-4xl mb-4">🗺️</div>
+        <h2 class="font-title text-xl text-ink group-hover:text-gold transition-colors">Gestione Luoghi</h2>
+        <p class="text-ink/60 text-sm mt-2">Crea e modifica le location del mondo di gioco</p>
+        <div class="mt-4 text-sm text-gold">
+          <%= stats.locations %> luoghi attivi
+        </div>
+      </a>
+
+      <!-- Invites -->
+      <a href="/admin/invites" class="card p-6 hover:shadow-xl transition-all group">
+        <div class="text-4xl mb-4">💌</div>
+        <h2 class="font-title text-xl text-ink group-hover:text-gold transition-colors">Codici Invito</h2>
+        <p class="text-ink/60 text-sm mt-2">Genera e gestisci i codici per le registrazioni</p>
+        <div class="mt-4 text-sm text-gold">
+          Gestisci inviti
+        </div>
+      </a>
+
+      <!-- Characters -->
+      <a href="/admin/characters" class="card p-6 hover:shadow-xl transition-all group">
+        <div class="text-4xl mb-4">🧙</div>
+        <h2 class="font-title text-xl text-ink group-hover:text-gold transition-colors">Personaggi</h2>
+        <p class="text-ink/60 text-sm mt-2">Visualizza e modifica tutti i personaggi</p>
+        <div class="mt-4 text-sm text-gold">
+          <%= stats.characters %> personaggi creati
+        </div>
+      </a>
+
+      <!-- Messages -->
+      <a href="/admin/messages" class="card p-6 hover:shadow-xl transition-all group">
+        <div class="text-4xl mb-4">📜</div>
+        <h2 class="font-title text-xl text-ink group-hover:text-gold transition-colors">Storico Messaggi</h2>
+        <p class="text-ink/60 text-sm mt-2">Visualizza e modera i messaggi per location</p>
+        <div class="mt-4 text-sm text-gold">
+          <%= stats.messages %> messaggi totali
+        </div>
+      </a>
+
+      <!-- Destiny Role -->
+      <div class="card p-6 border-2 border-gold/30">
+        <div class="text-4xl mb-4">🌙</div>
+        <h2 class="font-title text-xl text-gold">Il Destino</h2>
+        <p class="text-ink/60 text-sm mt-2">Gli utenti con questo ruolo possono narrare come "Il Destino"</p>
+        <div class="mt-4 text-sm text-gold">
+          Ruolo narratore speciale
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="mt-12">
+      <h2 class="font-title text-2xl text-ink mb-6">Attività Recente</h2>
+      <div class="card divide-y divide-ink/10">
+        <div class="p-8 text-center text-ink/40">
+          Nessuna attività recente da mostrare
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

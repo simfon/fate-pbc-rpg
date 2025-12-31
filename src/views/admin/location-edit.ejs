@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="it">
+<%- include('../partials/head', { title: location ? 'Modifica Luogo' : 'Nuovo Luogo' }) %>
+<body class="min-h-screen bg-gradient-to-b from-parchment to-parchment-dark">
+  <!-- Header -->
+  <header class="bg-midnight/95 text-mist py-4 shadow-xl">
+    <div class="container mx-auto px-4 flex items-center justify-between">
+      <a href="/game" class="font-title text-xl text-gold hover:text-gold/80 transition-colors">
+        Cronache del Destino
+      </a>
+      <div class="flex items-center gap-4">
+        <span class="bg-blood/80 text-white text-xs px-2 py-1 rounded">ADMIN</span>
+        <a href="/admin/locations" class="text-mist/70 hover:text-mist text-sm">← Torna ai luoghi</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8 max-w-2xl">
+    <h1 class="font-title text-3xl text-ink text-center mb-8">
+      <%= location ? 'Modifica Luogo' : 'Nuovo Luogo' %>
+    </h1>
+
+    <form action="<%= location ? '/admin/locations/' + location.id : '/admin/locations' %>" method="POST" class="card p-6 space-y-6">
+      <div>
+        <label class="block text-sm font-medium text-ink mb-1">Nome del Luogo *</label>
+        <input type="text" name="name" required
+               class="input-field w-full"
+               value="<%= location ? location.name : '' %>"
+               placeholder="Es. La Taverna del Drago Ubriaco">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-ink mb-1">Descrizione *</label>
+        <textarea name="description" required rows="4"
+                  class="input-field w-full"
+                  placeholder="Descrivi l'atmosfera e i dettagli del luogo..."><%= location ? location.description : '' %></textarea>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-ink mb-1">Immagine URL (opzionale)</label>
+        <input type="url" name="image_url"
+               class="input-field w-full"
+               value="<%= location ? (location.image_url || '') : '' %>"
+               placeholder="https://esempio.com/immagine.jpg">
+      </div>
+
+      <div class="space-y-4">
+        <h3 class="font-title text-lg text-gold">Collegamenti</h3>
+        <p class="text-sm text-ink/60">Seleziona i luoghi raggiungibili da questa posizione</p>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-ink mb-1">⬆ Nord</label>
+            <select name="north_id" class="input-field w-full">
+              <option value="">Nessuna uscita</option>
+              <% allLocations.forEach(function(loc) { %>
+                <% if (!location || loc.id !== location.id) { %>
+                  <option value="<%= loc.id %>" <%= location && location.north_id === loc.id ? 'selected' : '' %>>
+                    <%= loc.name %>
+                  </option>
+                <% } %>
+              <% }); %>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-ink mb-1">⬇ Sud</label>
+            <select name="south_id" class="input-field w-full">
+              <option value="">Nessuna uscita</option>
+              <% allLocations.forEach(function(loc) { %>
+                <% if (!location || loc.id !== location.id) { %>
+                  <option value="<%= loc.id %>" <%= location && location.south_id === loc.id ? 'selected' : '' %>>
+                    <%= loc.name %>
+                  </option>
+                <% } %>
+              <% }); %>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-ink mb-1">➡ Est</label>
+            <select name="east_id" class="input-field w-full">
+              <option value="">Nessuna uscita</option>
+              <% allLocations.forEach(function(loc) { %>
+                <% if (!location || loc.id !== location.id) { %>
+                  <option value="<%= loc.id %>" <%= location && location.east_id === loc.id ? 'selected' : '' %>>
+                    <%= loc.name %>
+                  </option>
+                <% } %>
+              <% }); %>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-ink mb-1">⬅ Ovest</label>
+            <select name="west_id" class="input-field w-full">
+              <option value="">Nessuna uscita</option>
+              <% allLocations.forEach(function(loc) { %>
+                <% if (!location || loc.id !== location.id) { %>
+                  <option value="<%= loc.id %>" <%= location && location.west_id === loc.id ? 'selected' : '' %>>
+                    <%= loc.name %>
+                  </option>
+                <% } %>
+              <% }); %>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex gap-4 pt-4">
+        <a href="/admin/locations" class="flex-1 btn-secondary text-center py-3 font-title">Annulla</a>
+        <button type="submit" class="flex-1 btn-primary py-3 font-title">
+          <%= location ? 'Salva Modifiche' : 'Crea Luogo' %>
+        </button>
+      </div>
+    </form>
+  </main>
+</body>
+</html>
