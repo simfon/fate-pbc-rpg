@@ -261,19 +261,46 @@ router.get('/characters/:id/edit', requireAdmin, (req, res) => {
 
 router.post('/characters/:id', requireAdmin, (req, res) => {
   const db = getDb();
-  const { fate_points, stress_1, stress_2, stress_3, mild_consequence, moderate_consequence, severe_consequence } = req.body;
+  const { 
+    name, high_concept, trouble, avatar_url,
+    careful, clever, flashy, forceful, quick, sneaky,
+    fate_points, stress_1, stress_2, stress_3, 
+    mild_consequence, moderate_consequence, severe_consequence,
+    current_location_id
+  } = req.body;
   
   db.prepare(`
     UPDATE characters SET 
+      name = ?,
+      high_concept = ?,
+      trouble = ?,
+      avatar_url = ?,
+      careful = ?,
+      clever = ?,
+      flashy = ?,
+      forceful = ?,
+      quick = ?,
+      sneaky = ?,
       fate_points = ?,
       stress_1 = ?,
       stress_2 = ?,
       stress_3 = ?,
       mild_consequence = ?,
       moderate_consequence = ?,
-      severe_consequence = ?
+      severe_consequence = ?,
+      current_location_id = ?
     WHERE id = ?
   `).run(
+    name,
+    high_concept || null,
+    trouble || null,
+    avatar_url || null,
+    parseInt(careful) || 0,
+    parseInt(clever) || 0,
+    parseInt(flashy) || 0,
+    parseInt(forceful) || 0,
+    parseInt(quick) || 0,
+    parseInt(sneaky) || 0,
     parseInt(fate_points) || 0,
     stress_1 ? 1 : 0,
     stress_2 ? 1 : 0,
@@ -281,6 +308,7 @@ router.post('/characters/:id', requireAdmin, (req, res) => {
     mild_consequence || null,
     moderate_consequence || null,
     severe_consequence || null,
+    parseInt(current_location_id) || 1,
     req.params.id
   );
   

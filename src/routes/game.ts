@@ -126,13 +126,20 @@ router.get('/play/:characterId', (req, res) => {
     west: location.west_id ? db.prepare('SELECT id, name FROM locations WHERE id = ?').get(location.west_id) : null,
   };
   
-  // Personaggi presenti
+  // Personaggi presenti (solo utenti online negli ultimi 5 minuti)
+  const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
+    .toISOString()
+    .replace('T', ' ')
+    .replace(/\.\d{3}Z$/, '');
+  
   const presentCharacters = db.prepare(`
     SELECT c.id, c.name, c.avatar_url, u.username
     FROM characters c
     JOIN users u ON c.user_id = u.id
-    WHERE c.current_location_id = ? AND c.is_active = 1
-  `).all(location.id);
+    WHERE c.current_location_id = ? 
+      AND c.is_active = 1
+      AND u.last_seen > ?
+  `).all(location.id, fiveMinutesAgo);
   
   // Ultimi messaggi
   const messages = db.prepare(`
